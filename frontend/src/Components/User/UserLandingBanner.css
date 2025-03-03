@@ -1,0 +1,280 @@
+.userLandingBanner {
+    height: 448px;
+    width: 100%;
+    color: white;
+    position: relative;
+    margin-top: 69px;
+  }
+  
+  .userLandingBanner img {
+    height: 448px;
+    width: 100%;
+    object-fit: cover;
+  }
+  
+  .userLandingBannerContent {
+    padding: 140px 30px 0 30px;
+    height: 448px;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    z-index: 2; /* Ensure content is above the fade */
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent); /* Gradient background for better readability */
+  }
+  
+  .userLandingBannerTitle {
+    font-size: 3rem;
+    font-weight: 800;
+    padding-bottom: 0.3rem;
+  }
+  
+  .userLandingBannerButtons button {
+    color: white;
+    outline: none;
+    border: none;
+    font-weight: 700;
+    border-radius: 5px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    background-color: rgba(51, 51, 51, 0.5);
+    cursor: pointer;
+    margin-right: 1rem;
+  }
+  
+  .userLandingBannerButtons button:hover {
+    color: black;
+    background-color: #e6e6e6;
+  }
+  
+  .userLandingBannerDescription {
+    width: 45rem;
+    line-height: 1.3;
+    padding-top: 1rem;
+    font-size: 1rem;
+    height: 80px;
+    max-width: 360px;
+  }
+  
+  .fade_bottom {
+    position: absolute;
+    bottom: 0;
+    height: 10.4rem;
+    width: 100%;
+    background-image: linear-gradient(180deg, transparent, rgba(37, 37, 37, 0.61), #111);
+    z-index: 1; /* Adjusted z-index to be below content */
+  }
+  
+  .slick-prev, .slick-next {
+    z-index: 10;
+  }
+  
+  .slick-prev:before, .slick-next:before {
+    color: white;
+  }
+  
+  .movieSlide {
+    position: relative;
+    height: 448px;
+  }
+  
+  .movieSlide img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
+  
+  .slick-list {
+    overflow: hidden;
+  }
+  
+  .slick-track {
+    display: flex;
+  }
+  
+  /* Override slick-dots styles for non-active dots */
+  .userLandingBanner .slick-dots li button:before {
+    color: #bfbfbf !important; /* Non-active dots color */
+    font-size: 6px; /* Adjust size if needed */
+    opacity: 1 !important; /* Ensure the dots are fully opaque */
+  }
+  
+  /* Override slick-dots styles for the active dot */
+  .userLandingBanner .slick-dots li.slick-active button:before {
+    color: #ffffff !important; /* Active dot color */
+    opacity: 1 !important; /* Ensure the active dot is fully opaque */
+  }
+  .user-home-top-img{
+    width: 355px;
+    height: 523px;
+    flex-shrink: 0;
+    margin-left: 0px;
+    z-index: 0;
+    border-radius: 14px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  }
+  .movieSlide {
+    text-align: center;
+    padding: 20px;
+    color: white;
+  }
+  
+  .screen1Content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #1a1a1a;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  .screen2Content {
+    max-height: 400px;
+    width: auto;
+    margin: auto;
+  }
+  .imageContainer {
+    position: relative;
+    display: flex;
+    justify-content: flex-start; /* Align the content to the left */
+    align-items: center;
+    background-image: url('../Images/paniCover.png');
+    background-size: cover;
+    background-position: center;
+    height: 100vh; /* Set the height to your requirement */
+    width: 100%;
+    overflow: hidden;
+  }
+  .imageContainer2 {
+    position: relative;
+    display: flex;
+    justify-content: flex-start; /* Align the content to the left */
+    align-items: center;
+    background-size: cover;
+    background-position: center;
+    height: 100vh; /* Set the height to your requirement */
+    width: 100%;
+    overflow: hidden;
+  }
+  .imageContainer img {
+    position: absolute; /* Position the image absolutely */
+    top: 0;
+    left: 0;
+    min-height: 523px;
+    width: 355px; /* Adjust the width as needed */
+    max-height: 400px; /* Optional: set a max-height */
+    box-shadow: none; /* Remove the box shadow */
+    margin: 0; /* Remove any default margins */
+    position: relative;
+    z-index: 2;
+  }
+  .screen2-text{
+    position: relative;
+    z-index: 1;
+    margin-left: 20px;
+    font-family: Lato;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 22px;
+  }
+  .screen2-lang{
+    margin-top: 10px;
+    display: inline-flex;
+  padding: 3px 30px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.20);
+  color: var(--icon-color, #FFF);
+  text-align: center;
+  font-family: Lato;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 37px; /* 231.25% */
+  }
+  .screen2-btn{
+    display: inline-flex;
+  padding: 3px 38px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 9px;
+  background: #D60000;
+  color: var(--icon-color, #FFF);
+  text-align: center;
+  font-family: Lato;margin-top: 10px;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 37px; /* 231.25% */
+  }
+  .screen3-text{
+    position: absolute;
+    bottom: -80px; /* Adjust this to position the text closer or farther from the bottom */
+    left: 50%; /* Horizontally center the text */
+    transform: translateX(-50%); /* Center the text horizontally */
+    color: white; /* Make the text color white for visibility */
+    text-align: center; /* Center the text */
+    z-index: 2; /* Make sure it's above the image */
+    font-size: 2rem; /* Adjust the font size as needed */
+  }
+  .imageContainer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(257deg, rgba(0, 0, 0, 0.50) 0%, #000 100%);
+    z-index: 1;
+  }
+  
+  
+  
+  .imageContainer .textContent {
+    position: relative;
+    z-index: 2; /* Ensures text and image are above the overlay */
+  }
+  
+  
+  .halfImage {
+    width: 45%;
+    border-radius: 10px;
+  }
+  
+  .screen3Content {
+    background-color: #111111;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .fullWidthImage {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin: 10px 0;
+    position: relative;
+  
+  }
+  
+  .button {
+    background-color: #ff4b2b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .button:hover {
+    background-color: #ff1e00;
+  }
+  .userLandingBanner {
+    position: relative; /* Ensure this section respects the document flow */
+    height: 100vh; /* Adjust the height to match your design */
+    overflow: hidden; /* Prevent any overflow issues */
+    background-color: black;
+  }

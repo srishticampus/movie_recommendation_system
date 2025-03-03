@@ -1,0 +1,215 @@
+.Contact_Us_Background {
+    background: url("../../assets/ContactUS_Background.png") ;
+   
+    height: 500px;
+
+
+}
+
+.Section_one {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 90%;
+}
+
+.sec_one_headingone {
+    color: #D6D6D6;
+    text-align: center;
+    font-family: Lato;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    text-transform: uppercase;
+
+
+}
+
+.sec_one_headingtwo {
+    color: #D6D6D6;
+    text-align: center;
+    font-family: Lato;
+    font-size: 54px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.sec_one_para {
+    color: #D6D6D6;
+    text-align: center;
+    font-family: Lato;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 25px;
+}
+
+.Contactus_Section_two{
+    background: black;
+
+}
+
+.Section-two_left_card {
+    margin-left: 70px;
+    max-width: 470px;
+    height:auto;
+    background: #1D1D1D;
+    border-radius: 25px;
+    border: 1px solid white;
+    padding: 25px;
+}
+
+.Section-two_left_card_header {
+    color: #D6D6D6;
+    text-align: center;
+    font-family: Lato;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin-top: 20px;
+}
+
+.Section-two_left_card_inputfield{
+    background-color: #1D1D1D !important;
+    height: 50px;
+    color: white !important;
+}
+
+.Section-two_left_card_inputemail{
+    background-color: #1D1D1D !important;
+    height: 50px;
+    color: white !important;
+}
+.Section-two_left_card_inputtextarea{
+    background-color: #1D1D1D !important; 
+    color: white !important;
+}
+.Section-two_left_card_inputfield::placeholder,
+.Section-two_left_card_inputemail::placeholder,
+.Section-two_left_card_inputtextarea::placeholder{
+    color: white !important;
+}
+
+.submit_button {
+    border-radius: 25px;
+    width: 150px;
+}
+.Section-two_right_card_one{
+   
+    background-color: #1D1D1D !important;
+    width: 470px;
+    border-radius: 25px;
+    border: 1px solid white;
+ 
+}
+.Phone_Icon {
+    max-width: 50px; 
+    max-height: 50px;  
+    border: 2px solid white;   
+    padding: 10px;
+}
+.Section-two_right_card_one_content{
+    display: flex;
+    justify-content: space-evenly;
+    color: white;
+    margin-top: 35px;
+}
+.Phone_number{
+    color: #D6D6D6;
+    font-family: Lato;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+.Mail_Icon{
+    max-width: 50px; 
+    max-height: 50px;  
+    border: 2px solid white;   
+    padding: 10px;
+}
+.Section-two_right_card_two{
+    margin-top: 87px;
+    background-color: #1D1D1D !important;
+    width: 470px;
+    border-radius: 25px;
+    border: 1px solid white;
+  
+ 
+}
+.Section-two_right_card_two_content{
+    display: flex;
+    justify-content: space-evenly;
+    color: white;
+    margin-top: 35px;
+}
+.email{
+    color: #D6D6D6;
+font-family: Lato;
+font-size: 24px;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+
+}
+.Section-two_right_card_three{
+    margin-top: 87px;
+    background-color: #1D1D1D !important;
+    width: 470px;
+    border-radius: 25px;
+    border: 1px solid white;
+}
+.Location_Icon{
+    max-width: 50px; 
+    max-height: 50px;  
+    border: 2px solid white;   
+    padding: 10px;
+}
+.headquarter{
+    color: #D6D6D6;
+    font-family: Lato;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+.Section-two_right_card_three_content{
+    display: flex;
+    justify-content: space-evenly;
+    color: white;
+    margin-top: 35px;
+ 
+}
+.Cinema_Avenue{
+    color: #D6D6D6;
+font-family: Lato;
+font-size: 18px;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+}
+.We_will_Respond{
+    color: #ADADAD;
+font-family: Lato;
+font-size: 14px;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+}
+.Available_Monday{
+    color: #ADADAD;
+font-family: Lato;
+font-size: 14px;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+}
+.Section-three{
+    background-color: black;
+    padding: 40px 0;
+  }
+  

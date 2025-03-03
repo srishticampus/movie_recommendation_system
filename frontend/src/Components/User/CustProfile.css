@@ -1,0 +1,107 @@
+.cust-pro-label {
+    color: black;
+    font-family: "Open Sans";
+    font-size: 14px;
+    font-style: normal;
+    padding-right: 30px;
+    font-weight: 400;
+    line-height: 30px; /* 214.286% */
+  
+  }
+  
+  .cust-pro-label-color {
+    color: #CA0000;
+    padding-right: 30px;
+  }
+  .cust-pro-name-color {
+    color: #CA0000;
+  }
+  .cust-pro-image-rounded {
+    border-radius: 50%;
+    height: 100px;
+    margin-top:0;
+    width: 100px;
+  }
+  
+  .modal-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 1rem;
+    background-color: #CA0000;
+  }
+  .modal-header-edit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 1rem;
+    
+  }
+  .modal-header button {
+    align-self: flex-start;
+  }
+  
+  .modal-body {
+    text-align: center;
+  }
+  .modal-dialog {
+    margin-top: 10px !important; /* Adjust the value as needed */
+  }
+  
+  .modal-header {
+    padding-top: 0.5rem; /* Reduce padding in the modal header if needed */
+  }
+
+ 
+  
+  .cust-prof-modal-title {
+    margin-top: -40px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  .cust-pro-image-rounded {
+    border-radius: 50%;
+    height: 100px;
+    width: 100px;
+    object-fit: cover;
+  }
+  
+  .ri-edit-2-fill {
+    border: 2px solid white;
+  }
+  
+  .modal-body {
+    padding: 1.5rem;
+  }
+  
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+  .bg_red {
+    border-radius: 5px;
+background: #CA0000;
+    width: 131px;
+    padding: 7px 10px;
+    justify-content: center;
+    border: 1px solid #CA0000;
+    align-items: center;
+    gap: 10px;
+  }
+  .bg_red_outline {
+    border: 1px solid #e50000;
+    color:#e50000;
+    padding: 10px 30px;
+    border-radius: 5px;
+    background: #ffffff;
+        width: 131px;
+        padding: 7px 10px;
+        justify-content: center;
+        border: 1px solid #CA0000;
+        align-items: center;
+        gap: 10px;
+  }
