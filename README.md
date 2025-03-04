@@ -104,7 +104,7 @@ cd movie_recommendation_system
 Run the following command to build and start the application using Docker Compose:
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 This command will:
@@ -122,7 +122,7 @@ This command will:
 To access the Django admin panel, create a superuser:
 
 ```bash
-docker-compose exec backend python manage.py createsuperuser
+docker compose exec backend python manage.py createsuperuser
 ```
 
 Follow the prompts to set up a username, email, and password.
@@ -134,25 +134,25 @@ Follow the prompts to set up a username, email, and password.
 ### Start Containers
 
 ```bash
-docker-compose up
+docker compose up
 ```
 
 ### Stop Containers
 
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ### Rebuild Containers
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 ### View Logs
 
 ```bash
-docker-compose logs
+docker compose logs
 ```
 
 ### Access a Running Container
@@ -175,18 +175,125 @@ Replace `<container_name>` with the name of the container you want to access.
 
    - If migrations fail or the database becomes corrupted, reset the database:
      ```bash
-     docker-compose down -v
-     docker-compose up --build
+     docker compose down -v
+     docker compose up --build
      ```
 
 3. **Container Not Starting**:
 
    - Check the logs for errors:
      ```bash
-     docker-compose logs
+     docker compose logs
      ```
 
 ---
 
 By following this guide, you can easily set up and run the Movie Recommendation System application using Docker on both Windows and Linux.
 
+API Documentation
+
+Authentication
+This API uses JWT (JSON Web Tokens) for authentication. After logging in, you will receive an access token and a refresh token. Include the access token in the Authorization header for protected endpoints.
+
+Example Header:
+Authorization: Bearer <access_token>
+
+Endpoints
+1. Register a New User
+URL: /api/register/
+
+Method: POST
+
+Description: Register a new user.
+
+Request Body:
+{
+  "email": "test@example.com",
+  "password": "password123",
+  "full_name": "Test User",
+  "user_type": "user"
+}
+
+Response (Success - 201 Created):
+{
+  "message": "User registered successfully.",
+  "data": {
+    "id": 1,
+    "email": "test@example.com",
+    "full_name": "Test User",
+    "user_type": "user",
+    "is_active": true,
+    "is_staff": false
+  }
+}
+
+Response (Error - 400 Bad Request):
+{
+  "error": "Invalid data.",
+  "details": {
+    "email": ["This field is required."],
+    "password": ["This field is required."]
+  }
+}
+
+2. Login
+URL: /api/login/
+
+Method: POST
+
+Description: Authenticate a user and return JWT tokens.
+
+Request Body:
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+Response (Success - 200 OK):
+
+{
+  "message": "Login successful.",
+  "data": {
+    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "email": "test@example.com",
+    "full_name": "Test User",
+    "user_type": "user"
+  }
+}
+
+Response (Error - 400 Bad Request):
+
+{
+  "error": "Invalid email or password."
+}
+
+3. Refresh Token
+URL: /api/token/refresh/
+
+Method: POST
+
+Description: Refresh an expired access token using the refresh token.
+
+Request Body:
+
+{
+  "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+
+Response (Success - 200 OK):
+
+{
+  "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+
+Response (Success - 200 OK):
+
+{
+  "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+
+Response (Error - 401 Unauthorized):
+
+{
+  "error": "Token is invalid or expired."
+}
