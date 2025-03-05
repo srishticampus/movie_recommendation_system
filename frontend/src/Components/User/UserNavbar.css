@@ -67,3 +67,24 @@
   .navbar-brand img {
     max-height: 60px; 
   }
+  .modalbg{
+    background-color: #444;
+    color: white;
+  }
+  #inputdata{
+    background-color: #444;
+  }
+  .profileheader {
+    background-color: #ca0000 ;
+    height: 120px;
+  }
+  .userprofileimhg {
+    width: 150px;
+    height: 150px;
+    position: relative;
+    left: 30%;
+    margin-top: -80px;
+  }
+.profileusername{
+  color: #ffffff;
+}
