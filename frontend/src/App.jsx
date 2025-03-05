@@ -13,9 +13,12 @@ import UserHome from "./Components/User/UserHome";
 import UserAbout from "./Components/User/UserAbout";
 import UserContact from "./Components/User/UserContact";
 import UserRecomendedmovie from "./Components/User/UserRecomendedmovie";
+import { ToastContainer, Bounce } from "react-toastify";
+
 function App() {
   return (
     <>
+    <ToastContainer position="top-right" transition={Bounce} autoClose={3000} />
      <Routes>
       <Route path="/" element={< LandingPage />} />
       <Route path="/aboutUs" element={< Aboutus />} />

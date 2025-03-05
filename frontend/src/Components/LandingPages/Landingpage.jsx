@@ -126,7 +126,7 @@ function LandingPage() {
         <Carousel cards={cards} groupedCards={groupedCards} />
       </div>
 
-      <div className="landing-sec3">
+      <div className="landing-sec3 mt-5">
         <p className="key_features">KEY FEATURES</p>
         <p className="All_You_Need">
           All You Need for the Perfect Movie Experience
@@ -136,47 +136,53 @@ function LandingPage() {
           style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}
         >
           {/* Key features cards */}
-          <div className="Sec3_Cards p-4" style={{ flex: "1 1 22%" }}>
-            <div className="card-header Sec3_Cards_header">Book Tickets</div>
+          <div className="cardSec3_Cards" style={{ flex: "1 1 22%" }}>
             <p className="Sec3_Cards_Sec_header">
-              "Secure Your Seat in Seconds"
+              "Personalized Recommendations"
             </p>
             <div className="card-body Sec3_card_body">
               <p>
-                Choose your favorite show, select your seats, and get ready for
-                an incredible movie night—all without standing in line!
+                Discover movies that match your unique taste! Our platform
+                analyzes your watch history and ratings to provide AI-powered
+                recommendations. Whether you’re into action-packed thrillers or
+                heartwarming dramasto your screen.
               </p>
             </div>
           </div>
-          <div className="Sec3_Cards p-4" style={{ flex: "1 1 22%" }}>
-            <div className="card-header Sec3_Cards_header">Order Snacks</div>
-            <p className="Sec3_Cards_Sec_header">"Snacks, Always Ready"</p>
-            <div className="card-body Sec3_card_body">
-              <p>
-                Pre-order your favorite movie snacks directly from the app. From
-                popcorn to drinks, so you can enjoy the show.
-              </p>
-            </div>
-          </div>
-          <div className="Sec3_Cards p-4" style={{ flex: "1 1 22%" }}>
-            <div className="card-header Sec3_Cards_header">Reserve Parking</div>
+          <div className="cardSec3_Cards" style={{ flex: "1 1 22%" }}>
             <p className="Sec3_Cards_Sec_header">
-              "Park with Ease, Every Time"
+              "Create and Manage Your Watch List"
             </p>
             <div className="card-body Sec3_card_body">
               <p>
-                Say goodbye to last-minute parking stress! Reserve your parking
-                space in advance and ensure a smooth arrival.
+                Keep track of the movies you want to see! With our easy-to-use
+                Watch List feature, you can bookmark titles and organize your
+                to-watch queue. Never forget a must-see movie again—access your
+                list anytime, anywhere.
               </p>
             </div>
           </div>
-          <div className="Sec3_Cards p-4" style={{ flex: "1 1 22%" }}>
-            <div className="card-header Sec3_Cards_header">Join Queue Slot</div>
-            <p className="Sec3_Cards_Sec_header">"Don't Miss Out"</p>
+          <div className="cardSec3_Cards" style={{ flex: "1 1 22%" }}>
+            <p className="Sec3_Cards_Sec_header">"Rate and Review Movies"</p>
             <div className="card-body Sec3_card_body">
               <p>
-                If tickets are fully booked, simply reserve a queue slot to hold
-                your place in line. So you never miss a show.
+                Express your love (or critique) for every movie you watch! Rate
+                movies on a 5-star scale and share detailed reviews with the
+                community. Your ratings help refine your recommendations and
+                guide fellow movie lovers.
+              </p>
+            </div>
+          </div>
+          <div className="cardSec3_Cards" style={{ flex: "1 1 22%" }}>
+            <p className="Sec3_Cards_Sec_header">
+              "Watch Instantly on Any Device"
+            </p>
+            <div className="card-body Sec3_card_body">
+              <p>
+                Enjoy your favorite movies with just a click. Our platform lets
+                you stream directly from any device—be it your smartphone,
+                tablet, or smart TV. Experience seamless playback and HD quality
+                for an immersive viewing experience
               </p>
             </div>
           </div>

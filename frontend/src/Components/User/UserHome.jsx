@@ -1,9 +1,8 @@
 import UserLandingBanner from "./UserHomeNowShowing";
 import { toast } from "react-toastify";
 import "../LandingPages/Landingpage.css";
-// import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { viewCount } from "../../Services/AdminServiece";
 import { IMG_BASE_URL } from "../../Services/BaseURL";
 import { ViewById } from "../../Services/CommonServices";
@@ -78,53 +77,53 @@ function UserHome() {
   const id = localStorage.getItem("user");
   const [userDetails, setUserDetails] = useState({});
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const result = await ViewById("viewUserById", id);
-        if (result.success) {
-          setUserDetails(result.user || {});
-        } else {
-          toast.error(result.message);
-        }
-      } catch (error) {
-        toast.error(error, "An unexpected error occurred during Data View");
-      }
-    };
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const result = await ViewById("viewUserById", id);
+  //       if (result.success) {
+  //         setUserDetails(result.user || {});
+  //       } else {
+  //         toast.error(result.message);
+  //       }
+  //     } catch (error) {
+  //       toast.error(error, "An unexpected error occurred during Data View");
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
 
-  useEffect(() => {
-    const fetchData2 = async () => {
-      try {
-        const result = await viewCount("nowShowingMovies");
-        if (result.success) {
-          setData(result.user.length > 0 ? result.user : []);
-        } else {
-          toast.error(result.message);
-        }
-      } catch (error) {
-        toast.error(error, "An unexpected error occurred during Data View");
-      }
-    };
-    fetchData2();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData2 = async () => {
+  //     try {
+  //       const result = await viewCount("nowShowingMovies");
+  //       if (result.success) {
+  //         setData(result.user.length > 0 ? result.user : []);
+  //       } else {
+  //         toast.error(result.message);
+  //       }
+  //     } catch (error) {
+  //       toast.error(error, "An unexpected error occurred during Data View");
+  //     }
+  //   };
+  //   fetchData2();
+  // }, []);
 
-  useEffect(() => {
-    const fetchData3 = async () => {
-      try {
-        const result = await viewCount("comingSoonMovies");
-        if (result.success) {
-          setData2(result.user.length > 0 ? result.user : []);
-        } else {
-          toast.error(result.message);
-        }
-      } catch (error) {
-        toast.error(error, "An unexpected error occurred during Data View");
-      }
-    };
-    fetchData3();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData3 = async () => {
+  //     try {
+  //       const result = await viewCount("comingSoonMovies");
+  //       if (result.success) {
+  //         setData2(result.user.length > 0 ? result.user : []);
+  //       } else {
+  //         toast.error(result.message);
+  //       }
+  //     } catch (error) {
+  //       toast.error(error, "An unexpected error occurred during Data View");
+  //     }
+  //   };
+  //   fetchData3();
+  // }, []);
 
   return (
     <div>
