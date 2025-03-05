@@ -34,6 +34,9 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 #Development Mode ON or OFF
 DEV= os.getenv('DEV')
 
+#TMDB API Key
+TMDB_API_KEY = os.getenv('TMDB_API_KEY')
+
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
@@ -49,7 +52,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
-    'accounts'
+    'accounts',
+    'movies'
 ]
 
 MIDDLEWARE = [
