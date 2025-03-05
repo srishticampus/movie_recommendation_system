@@ -1,14 +1,12 @@
-version: '3.8'
-
 services:
   backend:
     build:
       context: ./backend
-    container_name: django_backend
+    container_name: movie_recommendation_system_backend
     env_file:
       - ./backend/.env  # Path to your backend .env file
     ports:
-      - "8000:8000"  # Expose Django on port 8000
+      - "8005:8000"  # Expose Django on port 8005
     volumes:
       - ./backend:/app  # Sync backend code for development
       - sqlite_data:/app/db  # Persist SQLite database
@@ -22,7 +20,7 @@ services:
   frontend:
     build:
       context: ./frontend
-    container_name: vite_frontend
+    container_name: movie_recommendation_system_frontend
     env_file:
       - ./frontend/.env.development  # Dynamically load based on NODE_ENV
     ports:

@@ -34,6 +34,11 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 #Development Mode ON or OFF
 DEV= os.getenv('DEV')
 
+#Force Script Name
+FORCE_SCRIPT_NAME = os.getenv('FORCE_SCRIPT_NAME', '')
+#Csrf Trusted Origins
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
+
 #TMDB API Key
 TMDB_API_KEY = os.getenv('TMDB_API_KEY')
 
@@ -170,6 +175,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Directory for collected static files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
