@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { toast } from "react-toastify";
-import { login } from "../../Services/CommonServices";
 import { RiEyeLine, RiEyeOffLine } from "react-icons/ri"; // Import eye icons
 import "./UserLogin.css";
+import { login } from "../../Services/apiService";
+import Navbar from "../Navbar/Navbar";
 
 function UserLogin() {
   const navigate = useNavigate();
@@ -18,15 +19,23 @@ function UserLogin() {
   const validate = () => {
     const newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!data.email) newErrors.email = "Email is required";
-    else if (!emailRegex.test(data.email)) newErrors.email = "Enter a valid email";
-
-    if (!data.password) newErrors.password = "Password is required";
-
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+  
+    if (!data.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(data.email)) {
+      newErrors.email = "Enter a valid email";
+    }
+  
+    if (!passwordRegex.test(data.password)) {
+      newErrors.password = "Password must be at least 6 characters long and include at least one letter, one number, and one special character.";
+    }
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  
+  
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -34,27 +43,18 @@ function UserLogin() {
       toast.error("Please fix the errors in the form.");
       return;
     }
-
-    try {
-      const result = await login(data, "loginUser");
-      if (result.success) {
-        localStorage.setItem("user", result.user._id);
-        toast.success("Login successful!");
-        navigate("/user-home");
-      } else {
-        toast.error(result.message);
+      const result = await login(data);
+      if(result.success==true){
+        navigate("/user-home")
       }
-    } catch (error) {
-      toast.error("An unexpected error occurred during Login",error)
-    }
-  };
-
+  }
   const handleChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
 
   return (
     <div className="loginbanner">
+    <Navbar/>
       <div className="container">
         <div className="row">
           <div className="col-lg-4 col-md-6 col-sm-12 loginbanner_right_box">

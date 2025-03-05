@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./UserNavbar.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import logo from "../../assets/Vector (1).png";
 import { toast } from "react-toastify";
 import { IMG_BASE_URL } from "../../Services/BaseURL";

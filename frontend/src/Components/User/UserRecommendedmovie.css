@@ -1,0 +1,75 @@
+.Mainheading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+    margin: 20px auto;
+  }
+  
+  .headingone {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .mainsearchbar {
+    padding: 8px;
+    width: 250px;
+    border-radius: 15px;
+    border: 1px solid #ccc;
+  }
+  
+  .headingtwo {
+    font-size: 18px;
+    margin-right: 10px;
+  }
+  
+  .moviedropdowntab {
+    margin: 20px;
+    padding: 5px;
+    border-radius: 5px;
+  }
+  .moviesearchtab{
+        border-radius: 20px;
+  }
+  .moviecardgrp {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+  
+  .separatemoviecard {
+    width: 220px;
+    margin: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    transition: transform 0.2s;
+  }
+  
+  .separatemoviecard:hover {
+    transform: scale(1.02);
+  }
+  
+  /* .separatemoviecard {
+    width: 100%;
+    border-radius: 30px;
+    overflow: hidden;
+  } */
+  
+  .cardmoviename {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: small;
+  }
+  
+  .cardmovieratingstar {
+    width: 8px;
+    height: 8px;
+    margin-left: 5px;
+  }
+  
+  .cardmovieduration {
+    font-size: 12px;
+    color: gray;
+  }

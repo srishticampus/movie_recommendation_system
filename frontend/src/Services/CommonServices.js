@@ -3,8 +3,6 @@ import {API_BASE_URL} from './BaseURL'
 
 export const login = async (data, api) => {
     try {
-
-
         const response = await axios.post(`${API_BASE_URL}/${api}`, data);
         console.log(response);
 
