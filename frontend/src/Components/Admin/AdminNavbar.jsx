@@ -3,8 +3,6 @@ import "../User/UserNavbar.css";
 import { Link } from "react-router";
 import logo from "../../assets/Vector (1).png";
 // import { toast } from "react-toastify";
-// import { IMG_BASE_URL } from "../../Services/BaseURL";
-// import { resetPassword, ViewById } from "../../Services/CommonServices";
 // import arrow from "../../assets/redArrow.png";
 // import profile from "../../assets/userprofile.png";
 // import save from "../../assets/Frame.png";

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import {   useNavigate } from "react-router";
 import { toast } from "react-toastify";
-import { login } from "../../Services/CommonServices";
 import "./UserLogin.css";
 
 function UserForgotPassword(){
@@ -29,18 +28,18 @@ function UserForgotPassword(){
       return;
     }
 
-    try {
-      const result = await login(data, "loginUser");
-      if (result.success) {
-        localStorage.setItem("user", result.user._id);
-        toast.success("Login successful!");
-        navigate("/user-home");
-      } else {
-        toast.error(result.message);
-      }
-    } catch (error) {
-      toast.error("An unexpected error occurred during Login",error)
-    }
+    // try {
+    //   const result = await login(data, "loginUser");
+    //   if (result.success) {
+    //     localStorage.setItem("user", result.user._id);
+    //     toast.success("Login successful!");
+    //     navigate("/user-home");
+    //   } else {
+    //     toast.error(result.message);
+    //   }
+    // } catch (error) {
+    //   toast.error("An unexpected error occurred during Login",error)
+    // }
   };
 
   const handleChange = (e) => {
