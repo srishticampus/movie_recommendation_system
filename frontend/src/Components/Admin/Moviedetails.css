@@ -1,0 +1,90 @@
+.customermoviedescsect{
+    margin:100px;
+}
+.customermoviedescsectheading{
+    font-weight: bold;
+    font-size: 30px;
+}
+.customermoviedescsectcontent,.customermoviedescsectratingcardtext,.customermovierecommendcardtext{
+    color:grey;
+}
+.customermoviedescsectcastcardgroup{
+    width: 375px;
+    gap: 15px;
+}
+.customermoviedescsectcastsinglecard,.customermoviedescsectrecommendsinglecard{
+    border:none;
+}
+.customermoviedescimg{
+    width: 100px;
+    height:126px;
+    border-radius: 5px;
+}
+.customermoviecardtitle{
+    font-size: 13px;
+    font-weight: 600;
+}
+.customermoviecardtext,.customermoviedescsectratingcount{
+    font-size:13px;
+    color:grey;
+    font-weight: 500;
+}
+.customermovieratingcardheader{
+    font-weight: 500;
+}
+.customermoviedescsectratingcardfooter{
+    font-weight: bold;
+    font-size:10px;
+    color:grey;
+}
+.customermoviedescsectratingcardgroup,.customermoviedescsectratingcardgrouprow{
+    padding-left: 7px;
+    padding-right: 15px;
+    padding-bottom: 15px;
+}
+.customermoviedescsectratingsinglecard{
+    padding: 15px;
+    border-radius: 20px;
+    height: 148px;
+
+
+}
+.customermovieratingcardbody{
+    padding:5px;
+}
+#customermoviedescsectratingbtn{
+    border:none;
+    border-radius: 25px;
+    background-color: #C42A2A;
+    color: white;
+    padding-left: 19px;
+    padding-right: 19px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+.customermoviedescsectratingbtntitle{
+    padding: 15px;
+    font-weight: 500;
+}
+#customermoviedescsectratingtotal{
+    font-weight: 350;
+    font-size: 25px;
+}
+#customermoviedescsectcurrentrating{
+    padding-left: 15px;
+    font-size: 70px;
+    font-weight: 500;
+}
+.customermoviedescsectrecommendcardgroup{
+    width: 1300px;
+    height:365px;
+    gap: 15px;
+}
+.customermoviedescrecommendmovieimg{
+    width:20px;
+    height: 20px;
+    border-radius:25px;
+}
+.customermoviedescsectrecommendcardsect{
+    padding-top: 20px;
+}
