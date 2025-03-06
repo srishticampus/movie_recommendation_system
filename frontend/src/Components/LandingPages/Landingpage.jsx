@@ -10,8 +10,8 @@ import film6 from "../../assets/film6.png";
 import tamil from "../../assets/tamil.jpg";
 import telugu from "../../assets/telugu.jpg";
 import FooterLandingPage from "./FooterLandingPage";
-import Navbar from "../Navbar/Navbar"
-import "./Landingpage.css"
+import Navbar from "../Navbar/Navbar";
+import "./Landingpage.css";
 
 function Carousel({ groupedCards }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -21,17 +21,25 @@ function Carousel({ groupedCards }) {
   };
 
   const prevSlide = () => {
-    setActiveIndex((prevIndex) => (prevIndex - 1 + groupedCards.length) % groupedCards.length);
+    setActiveIndex(
+      (prevIndex) => (prevIndex - 1 + groupedCards.length) % groupedCards.length
+    );
   };
 
   return (
     <div className="container mt-5">
-      <div id="carouselExampleIndicators2" className="carousel slide" data-ride="carousel">
+      <div
+        id="carouselExampleIndicators2"
+        className="carousel slide"
+        data-ride="carousel"
+      >
         <div className="carousel-inner">
           {groupedCards.map((group, index) => (
             <div
               key={index}
-              className={`carousel-item ${index === activeIndex ? 'active' : ''}`}
+              className={`carousel-item ${
+                index === activeIndex ? "active" : ""
+              }`}
             >
               <div className="row">
                 {/* Previous Button */}
@@ -45,7 +53,11 @@ function Carousel({ groupedCards }) {
                 {group.map((card) => (
                   <div key={card.id} className="col-sm-2 mb-3">
                     <div className="card BootstrapCard">
-                      <img className="img-fluid" src={card.img} alt={`movie ${card.id}`} />
+                      <img
+                        className="img-fluid"
+                        src={card.img}
+                        alt={`movie ${card.id}`}
+                      />
                     </div>
                   </div>
                 ))}
@@ -85,18 +97,21 @@ function LandingPage() {
 
   return (
     <div className="landing-page-container">
-    <Navbar/>
+      <Navbar />
       <div className="landing_banner">
         <div className="container">
           <div className="row">
             <div className=" landing_banner_right_box mt-5">
               <p className="landing_banner_right_box_title">
-                MaxusDiscover Movies You'll Love in<br/> Just a Few Clicks.
+                MaxusDiscover Movies You'll Love in
+                <br /> Just a Few Clicks.
               </p>
               <p className="landing_banner_right_box_sub_title mt-5">
-              The power of AI to find your perfect movie match. Get personalized recommendations based on your watch history and ratings.
-              Watch Now              </p>
-              <Link to='/user_login'>
+                The power of AI to find your perfect movie match. Get
+                personalized recommendations based on your watch history and
+                ratings. Watch Now{" "}
+              </p>
+              <Link to="/user_login">
                 <button className="btn btn-danger landing_banner_register_btn mt-5 fw-bolder">
                   Start Now
                 </button>
@@ -111,30 +126,65 @@ function LandingPage() {
         <Carousel cards={cards} groupedCards={groupedCards} />
       </div>
 
-      <div className="landing-sec3">
+      <div className="landing-sec3 mt-5">
         <p className="key_features">KEY FEATURES</p>
-        <p className="All_You_Need">All You Need for the Perfect Movie Experience</p>
-        <div className="container" style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+        <p className="All_You_Need">
+          All You Need for the Perfect Movie Experience
+        </p>
+        <div
+          className="container"
+          style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}
+        >
           {/* Key features cards */}
-          <div className="Sec3_Cards p-4" style={{ flex: '1 1 22%' }}>
-            <div className="card-header Sec3_Cards_header">Book Tickets</div>
-            <p className="Sec3_Cards_Sec_header">"Secure Your Seat in Seconds"</p>
-            <div className="card-body Sec3_card_body"><p>Choose your favorite show, select your seats, and get ready for an incredible movie night—all without standing in line!</p></div>
+          <div className="cardSec3_Cards" style={{ flex: "1 1 22%" }}>
+            <p className="Sec3_Cards_Sec_header">
+              "Personalized Recommendations"
+            </p>
+            <div className="card-body Sec3_card_body">
+              <p>
+                Discover movies that match your unique taste! Our platform
+                analyzes your watch history and ratings to provide AI-powered
+                recommendations. Whether you’re into action-packed thrillers or
+                heartwarming dramasto your screen.
+              </p>
+            </div>
           </div>
-          <div className="Sec3_Cards p-4" style={{ flex: '1 1 22%' }}>
-            <div className="card-header Sec3_Cards_header">Order Snacks</div>
-            <p className="Sec3_Cards_Sec_header">"Snacks, Always Ready"</p>
-            <div className="card-body Sec3_card_body"><p>Pre-order your favorite movie snacks directly from the app. From popcorn to drinks, so you can enjoy the show.</p></div>
+          <div className="cardSec3_Cards" style={{ flex: "1 1 22%" }}>
+            <p className="Sec3_Cards_Sec_header">
+              "Create and Manage Your Watch List"
+            </p>
+            <div className="card-body Sec3_card_body">
+              <p>
+                Keep track of the movies you want to see! With our easy-to-use
+                Watch List feature, you can bookmark titles and organize your
+                to-watch queue. Never forget a must-see movie again—access your
+                list anytime, anywhere.
+              </p>
+            </div>
           </div>
-          <div className="Sec3_Cards p-4"  style={{ flex: '1 1 22%' }}>
-            <div className="card-header Sec3_Cards_header">Reserve Parking</div>
-            <p className="Sec3_Cards_Sec_header">"Park with Ease, Every Time"</p>
-            <div className="card-body Sec3_card_body"><p>Say goodbye to last-minute parking stress! Reserve your parking space in advance and ensure a smooth arrival.</p></div>
+          <div className="cardSec3_Cards" style={{ flex: "1 1 22%" }}>
+            <p className="Sec3_Cards_Sec_header">"Rate and Review Movies"</p>
+            <div className="card-body Sec3_card_body">
+              <p>
+                Express your love (or critique) for every movie you watch! Rate
+                movies on a 5-star scale and share detailed reviews with the
+                community. Your ratings help refine your recommendations and
+                guide fellow movie lovers.
+              </p>
+            </div>
           </div>
-          <div className="Sec3_Cards p-4" style={{ flex: '1 1 22%' }}>
-            <div className="card-header Sec3_Cards_header">Join Queue Slot</div>
-            <p className="Sec3_Cards_Sec_header">"Don't Miss Out"</p>
-            <div className="card-body Sec3_card_body"><p>If tickets are fully booked, simply reserve a queue slot to hold your place in line. So you never miss a show.</p></div>
+          <div className="cardSec3_Cards" style={{ flex: "1 1 22%" }}>
+            <p className="Sec3_Cards_Sec_header">
+              "Watch Instantly on Any Device"
+            </p>
+            <div className="card-body Sec3_card_body">
+              <p>
+                Enjoy your favorite movies with just a click. Our platform lets
+                you stream directly from any device—be it your smartphone,
+                tablet, or smart TV. Experience seamless playback and HD quality
+                for an immersive viewing experience
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -144,11 +194,8 @@ function LandingPage() {
         <Carousel cards={cards} groupedCards={groupedCards} />
       </div>
       <div className="landing_sec_5">
-      <FooterLandingPage />
+        <FooterLandingPage />
       </div>
-     
-
-
     </div>
   );
 }

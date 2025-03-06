@@ -10,9 +10,15 @@ import UserRegister from "./Components/User/UserRegister";
 import UserForgotPassword from "./Components/User/UserForgotPassword";
 import UserResetPassword from "./Components/User/UserResetPassword";
 import UserHome from "./Components/User/UserHome";
+import UserAbout from "./Components/User/UserAbout";
+import UserContact from "./Components/User/UserContact";
+import UserRecomendedmovie from "./Components/User/UserRecomendedmovie";
+import { ToastContainer, Bounce } from "react-toastify";
+
 function App() {
   return (
     <>
+    <ToastContainer position="top-right" transition={Bounce} autoClose={3000} />
      <Routes>
       <Route path="/" element={< LandingPage />} />
       <Route path="/aboutUs" element={< Aboutus />} />
@@ -22,6 +28,9 @@ function App() {
       <Route path="/user_forgot_password" element={<UserForgotPassword/>}/>
       <Route path="/user_reset_password" element={<UserResetPassword/>}/>
       <Route path="/user-home" element={<UserHome/>}/>
+      <Route path="/user-about" element={<UserAbout/>} />
+      <Route path="/user-contact" element={<UserContact/>} />
+      <Route path="/user-recommendedmovie" element={<UserRecomendedmovie/>} />
 
 </Routes>
     </>

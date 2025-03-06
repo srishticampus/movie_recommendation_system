@@ -6,7 +6,7 @@ import "slick-carousel/slick/slick-theme.css";
 import test2 from "../../assets/paniTitle.png";
 import test3 from "../../assets/kanguva 2.avif";
 import logo from "../../assets/Vector.png";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 // import { IMG_BASE_URL } from ".";
 function UserHomeNowShowing() {
   const settings = {

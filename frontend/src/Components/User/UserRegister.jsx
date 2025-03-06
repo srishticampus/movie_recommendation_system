@@ -1,16 +1,17 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { RiEyeLine, RiEyeOffLine } from "react-icons/ri"; // Import eye icons
 import "./UserLogin.css";
-import { registerWithFile } from "../../Services/CommonServices";
-
+import { userSignup } from "../../Services/apiService";
+import Navbar from "../Navbar/Navbar";
 function UserRegister() {
   const [data, setData] = useState({
-    name: "",
+    full_name: "",
     email: "",
     password: "",
     cpassword: "",
+    user_type: "user",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -41,9 +42,10 @@ function UserRegister() {
       /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
 
     if (!data.email) newErrors.email = "Email is required";
-    else if (!emailRegex.test(data.email)) newErrors.email = "Invalid email format";
+    else if (!emailRegex.test(data.email))
+      newErrors.email = "Invalid email format";
 
-    if (!data.name) newErrors.name = "Name is required";
+    if (!data.full_name) newErrors.full_name = "Name is required";
 
     if (!data.password) {
       newErrors.password = "Password is required";
@@ -71,21 +73,30 @@ function UserRegister() {
     }
 
     try {
-      const result = await registerWithFile(data, "registerUser");
+      const result = await userSignup(data);
+      console.log(result);
 
-      if (result.success) {
-        toast.success("Registration successful!");
+      if (result.success==true) {
+        console.log(result.success);
+        console.log(result.data.message);
+
+
+        toast.success(result.data.message);
         navigate("/user-login");
       } else {
-        toast.error(result.message);
+        toast.error("user with this email already exists.");
+        console.log(result.errors.message);
+        
       }
+
     } catch (error) {
-      toast.error("An unexpected error occurred during Registration",error)
+      toast.error("An unexpected error occurred during Registration", error);
     }
   };
 
   return (
     <div className="loginbanner">
+    <Navbar/>
       <div className="container">
         <div className="row">
           <div className="col-lg-4 col-md-6 col-sm-12 loginbanner_right_box">
@@ -95,14 +106,15 @@ function UserRegister() {
                 <label>Name</label>
                 <input
                   type="text"
-                  name="name"
+                  name="full_name"
                   placeholder="Enter Your Name"
-                  value={data.name}
+                  value={data.full_name}
                   onChange={handleChange}
                   className="form-control user_inp"
                 />
-                {errors.name && <div className="text-danger">{errors.name}</div>}
-
+                {errors.full_name && (
+                  <div className="text-danger">{errors.full_name}</div>
+                )}
 
                 <label>Email ID</label>
                 <input
@@ -113,7 +125,9 @@ function UserRegister() {
                   onChange={handleChange}
                   className="form-control user_inp"
                 />
-                {errors.email && <div className="text-danger">{errors.email}</div>}
+                {errors.email && (
+                  <div className="text-danger">{errors.email}</div>
+                )}
 
                 {/* Password Field */}
                 <label>Password</label>
@@ -130,7 +144,9 @@ function UserRegister() {
                     {showPassword ? <RiEyeOffLine /> : <RiEyeLine />}
                   </span>
                 </div>
-                {errors.password && <div className="text-danger">{errors.password}</div>}
+                {errors.password && (
+                  <div className="text-danger">{errors.password}</div>
+                )}
 
                 {/* Confirm Password Field */}
                 <label>Confirm Password</label>
@@ -143,17 +159,30 @@ function UserRegister() {
                     onChange={handleChange}
                     className="form-control user_inp"
                   />
-                  <span className="eye-icon" onClick={toggleCPasswordVisibility}>
+                  <span
+                    className="eye-icon"
+                    onClick={toggleCPasswordVisibility}
+                  >
                     {showCPassword ? <RiEyeOffLine /> : <RiEyeLine />}
                   </span>
                 </div>
-                {errors.cpassword && <div className="text-danger">{errors.cpassword}</div>}
+                {errors.cpassword && (
+                  <div className="text-danger">{errors.cpassword}</div>
+                )}
 
                 <div className="text-center">
-                  <button type="submit" className="button_bglogin mt-2">Sign Up</button>
+                  <button type="submit" className="button_bglogin mt-2">
+                    Sign Up
+                  </button>
                   <h6 className="mt-4 text-light">
                     Already have an account?
-                    <Link to="/user-login" className="text-light text-decoration-none mb-5"> Login</Link>
+                    <Link
+                      to="/user-login"
+                      className="text-light text-decoration-none mb-5"
+                    >
+                      {" "}
+                      Login
+                    </Link>
                   </h6>
                 </div>
               </form>
@@ -161,7 +190,7 @@ function UserRegister() {
           </div>
           <div className="col-lg-4 col-md-6 col-sm-12 loginbanner_left_box"></div>
           <div className="col-lg-4 col-md-6 col-sm-12 loginbanner_left_box">
-            <h1>WELCOME to MAXMUS</h1>
+            <h1>WELCOME to MAXMUS</h1>\{" "}
           </div>
         </div>
       </div>
