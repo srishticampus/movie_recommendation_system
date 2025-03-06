@@ -30,7 +30,6 @@ class MovieListView(APIView):
             genres = response.json().get("genres", [])
             return {genre["id"]: genre["name"] for genre in genres}  # Map genre ID to name
         except (requests.RequestException, requests.Timeout) as e:
-            print(f"TMDb Genre API Error: {e}")
             return {}
 
     def get_tmdb_movies(self, page=1, genre_id=None, query=None):
@@ -39,10 +38,8 @@ class MovieListView(APIView):
         """
         base_url = "https://api.themoviedb.org/3/"
         if query:
-            # Search movies by title
             url = f"{base_url}search/movie?api_key={settings.TMDB_API_KEY}&language=en-US&query={query}&page={page}"
         else:
-            # Get popular movies or filter by genre
             url = f"{base_url}discover/movie?api_key={settings.TMDB_API_KEY}&language=en-US&page={page}"
             if genre_id:
                 url += f"&with_genres={genre_id}"
@@ -51,48 +48,98 @@ class MovieListView(APIView):
             response = requests.get(url, timeout=self.TIMEOUT)
             response.raise_for_status()
             return response.json()
-        except (requests.RequestException, requests.Timeout) as e:
-            print(f"TMDb API Error: {e}")
-            return {"results": [], "total_pages": 1}
+        except requests.RequestException as e:
+            return {"results": [], "total_pages": 1, "error": str(e)}
 
     def get(self, request):
         """Handle GET request to return movies with filtering, search, and pagination"""
         page = request.GET.get("page", 1)
-        query = request.GET.get("query", None)  # Search query
-        genre_name = request.GET.get("genre", None)  # Genre filter (name, not ID)
+        query = request.GET.get("query")  # Search query
+        genre_name = request.GET.get("genre")  # Genre filter (name, not ID)
         
         try:
             page = int(page)
+            if page < 1:
+                return Response({"error": "Page number must be greater than 0"}, status=status.HTTP_400_BAD_REQUEST)
         except ValueError:
-            page = 1
+            return Response({"error": "Invalid page number"}, status=status.HTTP_400_BAD_REQUEST)
 
         genre_mapping = self.get_tmdb_genres()
-        genre_id = None
-        if genre_name:
-            # Convert genre name to genre ID
-            genre_id = next((id for id, name in genre_mapping.items() if name.lower() == genre_name.lower()), None)
+        genre_id = next((id for id, name in genre_mapping.items() if genre_name and name.lower() == genre_name.lower()), None)
 
         movie_data = self.get_tmdb_movies(page=page, genre_id=genre_id, query=query)
+        if "error" in movie_data:
+            return Response({"error": movie_data["error"]}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
         movies = movie_data.get("results", [])
         total_pages = movie_data.get("total_pages", 1)
 
-        enriched_movies = []
-        for movie in movies:
-            enriched_movies.append({
+        enriched_movies = [
+            {
                 "id": movie["id"],
                 "title": movie.get("title", "N/A"),
                 "release_date": movie.get("release_date", "N/A"),
                 "rating": movie.get("vote_average", "N/A"),
                 "plot": movie.get("overview", "N/A"),
-                "genres": [genre_mapping.get(genre_id, "Unknown") for genre_id in movie.get("genre_ids", [])],
-                "poster_url": f"https://image.tmdb.org/t/p/w500{movie.get('poster_path')}" if movie.get("poster_path") else "N/A",
+                "genres": [genre_mapping.get(gid, "Unknown") for gid in movie.get("genre_ids", [])],
+                "poster_url": f"https://image.tmdb.org/t/p/w500{movie.get('poster_path')}" if movie.get("poster_path") else None,
                 "language": movie.get("original_language", "N/A"),
                 "popularity": movie.get("popularity", "N/A"),
                 "vote_count": movie.get("vote_count", "N/A"),
-            })
+            }
+            for movie in movies
+        ]
 
         return Response({
             "movies": enriched_movies,
             "total_pages": total_pages,
             "current_page": page
         }, status=status.HTTP_200_OK)
+
+
+class MovieDetailView(APIView):
+    """
+    API to fetch detailed information about a single movie from TMDb.
+    """
+    TIMEOUT = 5
+    permission_classes = [permissions.AllowAny]
+
+    def get_movie_details(self, movie_id):
+        """Fetch movie details from TMDb."""
+        url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={settings.TMDB_API_KEY}&language=en-US"
+
+        try:
+            response = requests.get(url, timeout=self.TIMEOUT)
+            response.raise_for_status()
+            return response.json()
+        except requests.RequestException as e:
+            return {"error": str(e)}
+
+    def get(self, request, movie_id):
+        """Handle GET request to fetch detailed movie information"""
+        if not movie_id.isdigit():
+            return Response({"error": "Invalid movie ID format"}, status=status.HTTP_400_BAD_REQUEST)
+
+        movie_data = self.get_movie_details(movie_id)
+        if "error" in movie_data:
+            return Response({"error": movie_data["error"]}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        genres = [genre["name"] for genre in movie_data.get("genres", [])]
+        movie_detail = {
+            "id": movie_data["id"],
+            "title": movie_data.get("title", "N/A"),
+            "release_date": movie_data.get("release_date", "N/A"),
+            "rating": movie_data.get("vote_average", "N/A"),
+            "plot": movie_data.get("overview", "N/A"),
+            "genres": genres,
+            "poster_url": f"https://image.tmdb.org/t/p/w500{movie_data.get('poster_path')}" if movie_data.get("poster_path") else None,
+            "language": movie_data.get("original_language", "N/A"),
+            "popularity": movie_data.get("popularity", "N/A"),
+            "vote_count": movie_data.get("vote_count", "N/A"),
+            "runtime": movie_data.get("runtime", "N/A"),
+            "tagline": movie_data.get("tagline", "N/A"),
+            "budget": movie_data.get("budget", "N/A"),
+            "revenue": movie_data.get("revenue", "N/A"),
+        }
+
+        return Response(movie_detail, status=status.HTTP_200_OK)

@@ -299,22 +299,106 @@ Response (Error - 401 Unauthorized):
 }
 MovieList Api with Pagination, Genre Names, and Search
 
-1️ Get  Movies (Page 1)
+1️⃣ Get a List of Movies
+Endpoint:
 
-GET /api/movies/movies
-2️ Paginate (Next 10 Movies, Page 2)
+http
+GET movies//movies/
+Description:
+Fetches a list of movies with optional filtering by genre, search query, and pagination.
+
+Optional Query Parameters:
+Parameter	Type	Description
+page	int	Page number (default: 1)
+query	string	Search movies by title
+genre	string	Filter movies by genre name
+cURL Example
+Fetch the first page of movies:
+
+curl -X GET "http://yourdomain.com/movies/movies/" -H "Accept: application/json"
+Fetch the second page of movies:
 
 
-GET /api/movies/movies/?page=2
-3️ Search for a Movie (e.g., "Inception")
+curl -X GET "http://yourdomain.com/movies/movies/?page=2" -H "Accept: application/json"
+Search for a movie (Inception):
 
 
-GET /api/movies/movies/?query=Inception
-4️ Filter by Genre (e.g., "Action")
+curl -X GET "http://yourdomain.com/movies/movies/?query=Inception" -H "Accept: application/json"
+Filter movies by genre (Action):
 
+sh
+Copy
+Edit
+curl -X GET "http://yourdomain.com/movies/movies/?genre=Action" -H "Accept: application/json"
+Response (JSON)
+json
+{
+  "movies": [
+    {
+      "id": 27205,
+      "title": "Inception",
+      "release_date": "2010-07-15",
+      "rating": 8.8,
+      "plot": "A thief who enters the dreams of others to steal secrets...",
+      "genres": ["Action", "Sci-Fi"],
+      "poster_url": "https://image.tmdb.org/t/p/w500/path_to_poster.jpg",
+      "language": "en",
+      "popularity": 97.5,
+      "vote_count": 21000
+    }
+  ],
+  "total_pages": 10,
+  "current_page": 1
+}
+2️⃣ Get Movie Details
+Endpoint:
 
-GET /api/movies/movies/?genre=Action
-5️ Paginate & Filter (Next 10 Action Movies, Page 3)
+http
+GET movies/movies/{movie_id}/
+Description:
+Fetches detailed information about a specific movie by its ID.
 
+Path Parameter:
+Parameter	Type	Description
+movie_id	int	The ID of the movie
+cURL Example
+Fetch details of a movie with ID 27205 (Inception):
 
-GET /api/movies/movies/?genre=Action&page=3
+curl -X GET "http://yourdomain.com/movies/movies/27205/" -H "Accept: application/json"
+Response (JSON)
+json
+{
+  "id": 27205,
+  "title": "Inception",
+  "release_date": "2010-07-15",
+  "rating": 8.8,
+  "plot": "A thief who enters the dreams of others to steal secrets...",
+  "genres": ["Action", "Sci-Fi"],
+  "poster_url": "https://image.tmdb.org/t/p/w500/path_to_poster.jpg",
+  "language": "en",
+  "popularity": 97.5,
+  "vote_count": 21000,
+  "runtime": 148,
+  "tagline": "Your mind is the scene of the crime.",
+  "budget": 160000000,
+  "revenue": 829895144
+}
+3️⃣ Error Responses
+The API provides proper error handling:
+
+HTTP  Status Code	Meaning	Example Response
+400	  Bad Request	{ "error": "Invalid page number" }
+404	  Not Found	{ "error": "Movie not found" }
+503	  Service Unavailable	{ "error": "Unable to fetch data from TMDb" }
+Example: Fetch details for a non-existent movie (99999999):
+
+curl -X GET "http://yourdomain.com/movies/movies/99999999/" -H "Accept: application/json"
+Response:
+json
+{
+  "error": "Movie not found"
+}
+🌟 Summary
+Feature	          Endpoint	              Method	    Params
+Get Movie List	  movies//movies/	        GET	        page, query, genre
+Get Movie Details	movies//movies/{id}/	GET	        movie_id
