@@ -3,9 +3,6 @@ import { toast } from "react-toastify";
 import "../LandingPages/Landingpage.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { viewCount } from "../../Services/AdminServiece";
-import { IMG_BASE_URL } from "../../Services/BaseURL";
-import { ViewById } from "../../Services/CommonServices";
 import FooterLandingPage from "../LandingPages/FooterLandingPage";
 import AdminNavbar from "./AdminNavbar";
 

@@ -3,8 +3,6 @@ import "./UserNavbar.css";
 import { Link, useNavigate } from "react-router";
 import logo from "../../assets/Vector (1).png";
 import { toast } from "react-toastify";
-import { IMG_BASE_URL } from "../../Services/BaseURL";
-import { resetPassword, ViewById } from "../../Services/CommonServices";
 import arrow from "../../assets/redArrow.png";
 import profile from "../../assets/userprofile.png";
 import save from "../../assets/Frame.png";
@@ -71,28 +69,26 @@ function UserNavbar() {
   //   }
   // }, [navigate]);
   const fetchData = async () => {
-    try {
-      const result = await ViewById(
-        "viewUserById",
-        localStorage.getItem("user")
-      );
+    // try {
+    //   const result = await ViewById(
+    //     "viewUserById",
+    //     localStorage.getItem("user")
+    //   );
 
-      if (result.success) {
-        console.log(result);
-        if (result.user) {
-          setdata(result.user);
-          setSelectedImage(
-            `${IMG_BASE_URL}/${result.user.profilePic.filename}`
-          ); // Set initial image
-        } else setdata(null);
-      } else {
-        console.error("Data error:", result);
-        toast.error(result.message);
-      }
-    } catch (error) {
-      console.error("Unexpected error:", error);
-      toast.error("An unexpected error occurred during Data View");
-    }
+    //   if (result.success) {
+    //     console.log(result);
+    //     if (result.user) {
+    //       setdata(result.user);
+    //        // Set initial image
+    //     } else setdata(null);
+    //   } else {
+    //     console.error("Data error:", result);
+    //     toast.error(result.message);
+    //   }
+    // } catch (error) {
+    //   console.error("Unexpected error:", error);
+    //   toast.error("An unexpected error occurred during Data View");
+    // }
   };
   useEffect(() => {
     fetchData(); // Call the async function
@@ -167,26 +163,26 @@ function UserNavbar() {
       return;
     }
 
-    try {
-      const result = await resetPassword(
-        data,
-        "editUserById",
-        localStorage.getItem("user")
-      );
+    // try {
+    //   const result = await resetPassword(
+    //     data,
+    //     "editUserById",
+    //     localStorage.getItem("user")
+    //   );
 
-      if (result.success) {
-        console.log(result);
+    //   if (result.success) {
+    //     console.log(result);
 
-        toast.success("Profile Updated successfully !");
-        navigate("/user-home");
-      } else {
-        console.error("Registration error:", result);
-        toast.error(result.message);
-      }
-    } catch (error) {
-      console.error("Unexpected error:", error);
-      toast.error("An unexpected error occurred during Registration");
-    }
+    //     toast.success("Profile Updated successfully !");
+    //     navigate("/user-home");
+    //   } else {
+    //     console.error("Registration error:", result);
+    //     toast.error(result.message);
+    //   }
+    // } catch (error) {
+    //   console.error("Unexpected error:", error);
+    //   toast.error("An unexpected error occurred during Registration");
+    // }
   };
   // useEffect(() => {
   //   if (localStorage.getItem("user") == null) {
@@ -325,7 +321,6 @@ function UserNavbar() {
             <div>
               {" "}
               <img
-                src={`${IMG_BASE_URL}/${user?.dataPicture?.filename}`}
                 className="userprofileimhg rounded-circle"
               ></img>
               <div className="row">
@@ -530,10 +525,6 @@ function UserNavbar() {
                   <img src={arrow} />
                 </button>
                 <img
-                  src={
-                    selectedImage ||
-                    `${IMG_BASE_URL}/${data.profilePic.filename}`
-                  }
                   className="img-fluid cust-pro-image-rounded"
                   alt="User"
                   style={{ marginTop: "-21px" }}
@@ -602,14 +593,7 @@ function UserNavbar() {
               >
                 <div className="position-relative">
                   {/* Profile Picture */}
-                  <img
-                    src={
-                      selectedImage ||
-                      `${IMG_BASE_URL}/${data.profilePic.filename}`
-                    }
-                    className="cust-pro-image-rounded"
-                    alt="User"
-                  />
+                  
                   {/* Hidden File Input */}
                   <input
                     type="file"
