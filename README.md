@@ -301,20 +301,20 @@ MovieList Api with Pagination, Genre Names, and Search
 
 1️ Get  Movies (Page 1)
 
-GET /api/movies/
+GET /api/movies/movies
 2️ Paginate (Next 10 Movies, Page 2)
 
 
-GET /api/movies/?page=2
+GET /api/movies/movies/?page=2
 3️ Search for a Movie (e.g., "Inception")
 
 
-GET /api/movies/?query=Inception
+GET /api/movies/movies/?query=Inception
 4️ Filter by Genre (e.g., "Action")
 
 
-GET /api/movies/?genre=Action
+GET /api/movies/movies/?genre=Action
 5️ Paginate & Filter (Next 10 Action Movies, Page 3)
 
 
-GET /api/movies/?genre=Action&page=3
+GET /api/movies/movies/?genre=Action&page=3
