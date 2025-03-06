@@ -1,12 +1,11 @@
+import AdminNavbar from "./AdminNavbar";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Star from "../../assets/Star.png";
-import UserNavbar from "./Usernavbar";
-import "../Admin/AdminviewMovie.css";
-function UserRecomendedmovie() {
+function Adminviewmovies() {
   return (
     <div>
-      <UserNavbar />
+      <AdminNavbar />
       <div className="container mt-5">
         <div className="Mainheading mt-5 pt-5">
           <span className="headingone mt-5">All Movies</span>
@@ -67,4 +66,4 @@ function UserRecomendedmovie() {
   );
 }
 
-export default UserRecomendedmovie;
+export default Adminviewmovies;

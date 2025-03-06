@@ -14,6 +14,14 @@ import UserAbout from "./Components/User/UserAbout";
 import UserContact from "./Components/User/UserContact";
 import UserRecomendedmovie from "./Components/User/UserRecomendedmovie";
 import { ToastContainer, Bounce } from "react-toastify";
+import AdminLogin from "./Components/Admin/AdminLogin";
+import AdminViewUsers from "./Components/Admin/AdminViewUsers";
+import AdminLandingNavbar from "./Components/Navbar/AdminLandingNavbar";
+import AdminLandingPage from "./Components/LandingPages/AdminLandingPage";
+import AdminHome from "./Components/Admin/AdminHome";
+import Adminviewmovies from "./Components/Admin/Adminviewmovies";
+import AdminContact from "./Components/Admin/AdminContact";
+import MovieDetailedPage from "./Components/Admin/MovieDetailedPage";
 
 function App() {
   return (
@@ -31,6 +39,12 @@ function App() {
       <Route path="/user-about" element={<UserAbout/>} />
       <Route path="/user-contact" element={<UserContact/>} />
       <Route path="/user-recommendedmovie" element={<UserRecomendedmovie/>} />
+      <Route path="/admin-login" element={<AdminLogin/>} />
+      <Route path="/admin-viewusers" element={<AdminViewUsers/>} />
+      <Route path="/admin-home" element={<AdminHome/>} />
+      <Route path="/admin-viewmovies" element={<Adminviewmovies/>} />
+      <Route path="/admin-contact" element={<AdminContact/>} />
+      <Route path="/admin-viewmovieDetails" element={<MovieDetailedPage/>} />
 
 </Routes>
     </>
