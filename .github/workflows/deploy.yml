@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v3
 
       # Step 2: SSH into the server and clean up the target directory (excluding specific files and folders)
-      - name: Clean up server directory (preserve .env, db.sqlite3, and media folder)
+      - name: Clean up server directory (preserve db.sqlite3 and media folder)
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -24,7 +24,7 @@ jobs:
           script: |
             cd /var/www/python.sicsglobal.com/movie_recommendation_system/
 
-            # Create a backup of the current deployment
+            # Create a backup of the current deployment (excluding environment files)
             mkdir -p .backup
             cp -r backend .backup/backend
             cp -r frontend .backup/frontend
@@ -32,21 +32,15 @@ jobs:
 
             # Move files and folders to preserve to a temporary directory
             mkdir -p .temp
-            mv backend/.env .temp/backend.env
             mv backend/db.sqlite3 .temp/db.sqlite3
             mv backend/media .temp/media
-            mv frontend/.env.development .temp/frontend.env.development
-            mv frontend/.env.production .temp/frontend.env.production
 
             # Delete all files and subdirectories except the .temp directory
             find . -mindepth 1 -maxdepth 1 ! -name '.temp' -exec rm -rf {} +
 
             # Move preserved files and folders back to their original locations
-            mv .temp/backend.env backend/.env
             mv .temp/db.sqlite3 backend/db.sqlite3
             mv .temp/media backend/media
-            mv .temp/frontend.env.development frontend/.env.development
-            mv .temp/frontend.env.production frontend/.env.production
 
             # Clean up the temporary directory
             rm -rf .temp
@@ -65,7 +59,26 @@ jobs:
           tar_tmp_path: /tmp  # Use a writable temporary directory
           tar_exec: "tar"  # Use tar without sudo
 
-      # Step 4: SSH into the server and deploy the application using docker-compose
+      # Step 4: Create environment files on the server
+      - name: Create environment files
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            cd /var/www/python.sicsglobal.com/movie_recommendation_system/
+
+            # Create backend .env file
+            echo "${{ secrets.BACKEND_ENV }}" > backend/.env
+
+            # Create frontend .env.development file
+            echo "${{ secrets.FRONTEND_ENV_DEVELOPMENT }}" > frontend/.env.development
+
+            # Create frontend .env.production file
+            echo "${{ secrets.FRONTEND_ENV_PRODUCTION }}" > frontend/.env.production
+
+      # Step 5: SSH into the server and deploy the application using docker-compose
       - name: Deploy to server
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -81,7 +94,7 @@ jobs:
             # Build and start new containers
             docker-compose up -d --build
 
-      # Step 5: Verify deployment
+      # Step 6: Verify deployment
       - name: Verify deployment
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -103,7 +116,7 @@ jobs:
 
             echo "Deployment verified successfully."
 
-      # Step 6: Rollback in case of failure
+      # Step 7: Rollback in case of failure
       - name: Rollback on failure
         if: failure()  # Run this step only if any previous step fails
         uses: appleboy/ssh-action@v0.1.10
@@ -117,7 +130,7 @@ jobs:
             # Stop and remove any partially deployed containers
             docker-compose down
 
-            # Restore the backup
+            # Restore the backup (excluding environment files)
             cp -r .backup/backend backend
             cp -r .backup/frontend frontend
             cp .backup/docker-compose.yml docker-compose.yml
