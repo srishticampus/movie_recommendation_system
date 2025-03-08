@@ -35,7 +35,7 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 DEV= os.getenv('DEV')
 
 #Force Script Name
-FORCE_SCRIPT_NAME = os.getenv('FORCE_SCRIPT_NAME', '')
+#FORCE_SCRIPT_NAME = os.getenv('FORCE_SCRIPT_NAME', '')
 #Csrf Trusted Origins
 CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
 
@@ -109,7 +109,23 @@ SIMPLE_JWT = {
 }
 #Cors
 CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
+CORS_ALLOW_CREDENTIALS = True  # Allow cookies and sessions to be sent
 
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+]
+
+CORS_ALLOW_HEADERS = [
+    "content-type",
+    "authorization",
+    "x-csrftoken",
+    "x-requested-with",
+]
 #Email Setup
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com' 
