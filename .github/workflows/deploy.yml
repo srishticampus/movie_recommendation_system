@@ -14,7 +14,36 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Copy files to the server using SCP with password authentication
+      # Step 2: SSH into the server and clean up the target directory (excluding specific files)
+      - name: Clean up server directory (preserve .env and db.sqlite3)
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            cd /var/www/python.sicsglobal.com/movie_recommendation_system/
+
+            # Move files to preserve to a temporary directory
+            mkdir -p .temp
+            mv backend/.env .temp/backend.env
+            mv backend/db.sqlite3 .temp/db.sqlite3
+            mv frontend/.env.development .temp/frontend.env.development
+            mv frontend/.env.production .temp/frontend.env.production
+
+            # Delete all files and subdirectories except the .temp directory
+            find . -mindepth 1 -maxdepth 1 ! -name '.temp' -exec rm -rf {} +
+
+            # Move preserved files back to their original locations
+            mv .temp/backend.env backend/.env
+            mv .temp/db.sqlite3 backend/db.sqlite3
+            mv .temp/frontend.env.development frontend/.env.development
+            mv .temp/frontend.env.production frontend/.env.production
+
+            # Clean up the temporary directory
+            rm -rf .temp
+
+      # Step 3: Copy files to the server using SCP with password authentication
       - name: Copy files to server
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -25,7 +54,7 @@ jobs:
           target: "/var/www/python.sicsglobal.com/movie_recommendation_system/"
           strip_components: 1  # Remove the top-level directory when copying
 
-      # Step 3: SSH into the server and deploy the application using docker-compose
+      # Step 4: SSH into the server and deploy the application using docker-compose
       - name: Deploy to server
         uses: appleboy/ssh-action@v0.1.10
         with:
