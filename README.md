@@ -402,3 +402,134 @@ json
 Feature	          Endpoint	              Method	    Params
 Get Movie List	  movies//movies/	        GET	        page, query, genre
 Get Movie Details	movies//movies/{id}/	GET	        movie_id
+
+Add Movie to Watchlist
+This endpoint allows users to add a movie to their personal watchlist.
+
+Endpoint
+
+POST /api/movies/add-to-watchlist/
+Request Headers
+Header	Value
+Authorization	Token <your_token> (if authentication is required)
+Content-Type	application/json
+Request Body
+Field	Type	Required	Description
+movie_id	int	Yes	The TMDb movie ID
+cURL Request
+
+curl -X POST http://127.0.0.1:8000/api/movies/add-to-watchlist/ \
+     -H "Authorization: Token <your_token>" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "movie_id": 550
+         }'
+Success Response (201 Created)
+
+{
+  "message": "Movie added to watchlist successfully",
+  "watchlist_entry": {
+    "id": 1,
+    "user": 5,
+    "movie": {
+      "id": 550,
+      "title": "Fight Club",
+      "release_date": "1999-10-15",
+      "rating": 8.8,
+      "plot": "A depressed man forms an underground fight club.",
+      "genres": ["Drama"],
+      "poster_url": "https://image.tmdb.org/t/p/w500/some_image.jpg",
+      "language": "en",
+      "popularity": 9.5
+    }
+  }
+}
+Error Responses
+400 Bad Request (If the movie is already in the watchlist)
+
+{
+  "error": "Movie is already in the watchlist."
+}
+401 Unauthorized (If authentication is required but missing)
+
+{
+  "error": "Authentication credentials were not provided."
+}
+404 Not Found (If the movie does not exist in the database)
+
+{
+  "error": "Movie not found in the database. Please add it first."
+}
+
+3. Add a Movie Rating
+Endpoint
+
+POST /api/movies/ratings/
+Headers
+Header	Value
+Authorization	Bearer <your_access_token>
+Content-Type	application/json
+Request Body
+
+{
+    "movie": 27205,
+    "rating": 5,
+    "review": "Amazing movie with mind-blowing concepts!"
+}
+Example Request
+
+curl -X POST "http://your-domain.com/api/movies/ratings/" \
+     -H "Authorization: Bearer <your_access_token>" \
+     -H "Content-Type: application/json" \
+     -d '{
+            "movie": 27205,
+            "rating": 5,
+            "review": "Amazing movie with mind-blowing concepts!"
+         }'
+Example Response
+
+{
+    "id": 1,
+    "user": 5,
+    "movie": 27205,
+    "rating": 5,
+    "review": "Amazing movie with mind-blowing concepts!"
+}
+4. Update a Movie Rating
+Endpoint
+
+PUT /api/movies/ratings/{rating_id}/
+Path Parameters
+Parameter	Type	Description
+rating_id	int	ID of the rating to be updated
+Example Request
+
+curl -X PUT "http://your-domain.com/api/movies/ratings/1/" \
+     -H "Authorization: Bearer <your_access_token>" \
+     -H "Content-Type: application/json" \
+     -d '{
+            "rating": 4,
+            "review": "Great movie but a bit complex."
+         }'
+Example Response
+
+{
+    "id": 1,
+    "user": 5,
+    "movie": 27205,
+    "rating": 4,
+    "review": "Great movie but a bit complex."
+}
+5. Delete a Movie Rating
+Endpoint
+
+DELETE /api/movies/ratings/{rating_id}/
+Example Request
+
+curl -X DELETE "http://your-domain.com/api/movies/ratings/1/" \
+     -H "Authorization: Bearer <your_access_token>"
+Example Response
+
+{
+    "message": "Rating deleted successfully"
+}
