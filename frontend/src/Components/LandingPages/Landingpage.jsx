@@ -22,7 +22,8 @@ function Carousel({ groupedCards }) {
 
   const prevSlide = () => {
     setActiveIndex(
-      (prevIndex) => (prevIndex - 1 + groupedCards.length) % groupedCards.length
+      (prevIndex) =>
+        (prevIndex - 1 + groupedCards.length) % groupedCards.length,
     );
   };
 
@@ -111,7 +112,7 @@ function LandingPage() {
                 personalized recommendations based on your watch history and
                 ratings. Watch Now{" "}
               </p>
-              <Link to="/user_login">
+              <Link to="/user-login">
                 <button className="btn btn-danger landing_banner_register_btn mt-5 fw-bolder">
                   Start Now
                 </button>
