@@ -23,6 +23,7 @@ import Adminviewmovies from "./Components/Admin/Adminviewmovies";
 import AdminContact from "./Components/Admin/AdminContact";
 import MovieDetailedPage from "./Components/Admin/MovieDetailedPage";
 import UserWatchedmovie from "./Components/User/UserWatchedMovie";
+import MovieDetails from "./Components/User/MovieDetails";
 
 function App() {
   return (
@@ -48,6 +49,9 @@ function App() {
           element={<UserRecomendedmovie />}
         />
         <Route path="/user-watchedmovie" element={<UserWatchedmovie />} />
+
+        <Route path="/movie/:id" element={<MovieDetails />} />
+
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/admin-viewusers" element={<AdminViewUsers />} />
         <Route path="/admin-home" element={<AdminHome />} />

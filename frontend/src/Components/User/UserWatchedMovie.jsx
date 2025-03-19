@@ -5,6 +5,7 @@ import UserNavbar from "./Usernavbar";
 import "../Admin/AdminviewMovie.css";
 import { useState, useEffect } from "react";
 import { getWatchList } from "../../Services/apiService";
+import { Link } from "react-router";
 // import countryCodeToFlagEmoji from "country-code-to-flag-emoji";
 
 function UserWatchedmovie() {
@@ -31,30 +32,32 @@ function UserWatchedmovie() {
         <center>
           <span className="headingone m-5">Watchlist</span>
         </center>
-        <div className="row">
+        <div className="d-flex flex-column align-items-center">
           {movies.map((movie) => (
-            <Card key={movie.id} className="separatemoviecard">
-              <Card.Img
-                style={{ width: "100%" }}
-                variant="top"
-                src={movie.poster_url}
-              />
-              <Card.Body>
-                <Card.Title>{movie.title}</Card.Title>
-                <div className="row">
-                  {" "}
-                  <img
-                    src={Star}
-                    alt="Star"
-                    style={{
-                      width: "20px",
-                      height: "20px",
-                    }}
-                  />
-                  <small>{movie.average_rating}/10</small>
-                </div>
-              </Card.Body>
-            </Card>
+            <div key={movie.id} style={{ margin: "10px", width: "80%" }}>
+              <Link
+                style={{ textDecoration: "none" }}
+                to={`/movie/${movie.tmdb_id}`}
+              >
+                <Card className="separatemoviecard" style={{ width: "100%" }}>
+                  <Card.Body>
+                    <Card.Title>{movie.title}</Card.Title>
+                    <div className="row">
+                      {" "}
+                      <img
+                        src={Star}
+                        alt="Star"
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                        }}
+                      />
+                      <small>{movie.average_rating}/10</small>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Link>
+            </div>
           ))}
         </div>
       </div>

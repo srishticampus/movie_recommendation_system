@@ -73,7 +73,7 @@ export const getMovies = async (page = 1, query = "", genre = "") => {
 };
 
 export const getMovieDetails = async (movieId) => {
-  return handleResponse(apiClient.get(`/api/movies/${movieId}/`));
+  return handleResponse(apiClient.get(`/api/movies/movies/${movieId}/`));
 };
 
 export const addToWatchList = async (movieId) => {
@@ -99,5 +99,33 @@ export const getWatchList = async () => {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
     }),
+  );
+};
+
+export const getUserRatings = async (movieId) => {
+  const response = await handleResponse(
+    apiClient.get(`/api/movies/movies/${movieId}/my-rating/`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    }),
+  );
+  return response;
+};
+
+export const submitRating = async (movieId, rating) => {
+  return handleResponse(
+    apiClient.post(
+      `/api/movies/ratings/`,
+      {
+        rating: rating,
+        movie: movieId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      },
+    ),
   );
 };

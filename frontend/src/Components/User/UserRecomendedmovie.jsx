@@ -4,7 +4,8 @@ import Star from "../../assets/Star.png";
 import UserNavbar from "./Usernavbar";
 import "../Admin/AdminviewMovie.css";
 import { useState, useEffect } from "react";
-import { getMovies, addToWatchList } from "../../Services/apiService";
+import { getMovies } from "../../Services/apiService";
+import { Link } from "react-router";
 // import countryCodeToFlagEmoji from "country-code-to-flag-emoji";
 
 function UserRecomendedmovie() {
@@ -30,17 +31,6 @@ function UserRecomendedmovie() {
 
   const handleSearch = () => {
     fetchMovies();
-  };
-
-  const handleAddToWatchlist = async (movieId) => {
-    try {
-      await addToWatchList(movieId);
-      alert("Movie added to watchlist!");
-      // Optionally, you can update the movie list to reflect the change immediately
-    } catch (error) {
-      console.error("Error adding movie to watchlist:", error);
-      alert("Failed to add movie to watchlist.");
-    }
   };
 
   useEffect(() => {
@@ -95,39 +85,41 @@ function UserRecomendedmovie() {
             Search
           </Button>
         </center>
-        <div className="row">
+        <div className="row row-cols-1 row-cols-md-4 g-4">
           {movies.map((movie) => (
-            <Card key={movie.id} className="separatemoviecard">
-              <Card.Img
-                style={{ width: "100%" }}
-                variant="top"
-                src={movie.poster_url}
-              />
-              <Card.Body>
-                <Card.Title>{movie.title}</Card.Title>
-                <div className="row">
-                  <div className="col-7">{movie.genres.join(", ")} </div>
-                  <div className="col-5">
-                    {" "}
-                    <img
-                      src={Star}
-                      alt="Star"
-                      style={{ width: "20px", height: "20px" }}
-                    />
-                    <small>{movie.rating}/10</small>
-                  </div>
-                </div>
-
-                {/* Button to add to watchlist */}
-                <Button
-                  variant="success"
-                  className="addwatchlistbtn"
-                  onClick={() => handleAddToWatchlist(movie.id)}
-                >
-                  Add to Watchlist
-                </Button>
-              </Card.Body>
-            </Card>
+            <div className="col" key={movie.id}>
+              <Link
+                style={{ textDecoration: "none" }}
+                to={`/movie/${movie.id}`}
+              >
+                <Card className="separatemoviecard h-100">
+                  <Card.Img
+                    style={{
+                      width: "100%",
+                      height: "400px",
+                      objectFit: "cover",
+                    }}
+                    variant="top"
+                    src={movie.poster_url}
+                  />
+                  <Card.Body>
+                    <Card.Title>{movie.title}</Card.Title>
+                    <div className="row">
+                      <div className="col-7">{movie.genres.join(", ")} </div>
+                      <div className="col-5">
+                        {" "}
+                        <img
+                          src={Star}
+                          alt="Star"
+                          style={{ width: "20px", height: "20px" }}
+                        />
+                        <small>{movie.rating}/10</small>
+                      </div>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Link>
+            </div>
           ))}
         </div>
       </div>
