@@ -354,3 +354,25 @@ class UserRatingForMovieView(generics.RetrieveAPIView):
             raise NotFound("You have not rated this movie yet.")
 
         return rating
+
+class MovieRatingsView(generics.ListAPIView):
+    """
+    API to fetch all ratings for a specific movie.
+    """
+    serializer_class = RatingSerializer
+    permission_classes = [permissions.AllowAny]  # Allow anyone to view ratings
+
+    def get_queryset(self):
+        """
+        Return all ratings for the specified movie.
+        """
+        movie_tmdb_id = self.kwargs.get('movie_tmdb_id')
+
+        try:
+            # Fetch the movie by tmdb_id
+            movie = Movie.objects.get(tmdb_id=movie_tmdb_id)
+        except Movie.DoesNotExist:
+            raise NotFound("Movie not found in the database.")
+
+        # Fetch all ratings for the movie
+        return Rating.objects.filter(movie=movie)
