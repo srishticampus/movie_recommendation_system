@@ -2,17 +2,16 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Star from "../../assets/Star.png";
 import UserNavbar from "./Usernavbar";
-import "../Admin/AdminviewMovie.css";
 import Form from 'react-bootstrap/Form';
 
-function UserRecomendedmovie() {
+function SavedMoviesList() {
   return (
     <div>
       <UserNavbar />
-      <div className="container mt-5 pt-5">
+      <div className="container mt-5 pt-3">
       <div className='row mt-5'>
       <div className='col'>
-          <h4>Recommended Movies</h4>
+          <h4>Saved Movies</h4>
       </div>
       <div className='col '>
           <Form className="searchbar1">
@@ -79,4 +78,4 @@ function UserRecomendedmovie() {
   );
 }
 
-export default UserRecomendedmovie;
+export default SavedMoviesList;

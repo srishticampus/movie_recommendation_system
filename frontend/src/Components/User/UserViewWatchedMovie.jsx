@@ -2,29 +2,27 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Star from "../../assets/Star.png";
 import UserNavbar from "./Usernavbar";
-import "../Admin/AdminviewMovie.css";
-import Form from 'react-bootstrap/Form';
-
-function UserRecomendedmovie() {
+import Form from "react-bootstrap/Form";
+function UserViewWatchedMovie() {
   return (
     <div>
       <UserNavbar />
       <div className="container mt-5 pt-5">
-      <div className='row mt-5'>
-      <div className='col'>
-          <h4>Recommended Movies</h4>
-      </div>
-      <div className='col '>
-          <Form className="searchbar1">
+        <div className="row mt-5">
+          <div className="col">
+            <h4>Watched Movies</h4>
+          </div>
+          <div className="col ">
+            <Form className="searchbar1">
               <Form.Control
-                  type="search"
-                  placeholder="Search Here... "
-                  aria-label="Search"
-
-              /> </Form>
-      </div>
-  </div>
-        <center>
+                type="search"
+                placeholder="Search Here... "
+                aria-label="Search"
+              />{" "}
+            </Form>
+          </div>
+        </div>
+        <center className="mt-2">
           <span className="headingtwo">Filter</span>
           <select name="finestatus" className="moviedropdowntab">
             <option>Genre</option>
@@ -79,4 +77,4 @@ function UserRecomendedmovie() {
   );
 }
 
-export default UserRecomendedmovie;
+export default UserViewWatchedMovie;

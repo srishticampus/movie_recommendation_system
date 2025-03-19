@@ -2,15 +2,27 @@ import AdminNavbar from "./AdminNavbar";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Star from "../../assets/Star.png";
+import Form from 'react-bootstrap/Form';
+
 function Adminviewmovies() {
   return (
     <div>
       <AdminNavbar />
-      <div className="container mt-5">
-        <div className="Mainheading mt-5 pt-5">
-          <span className="headingone mt-5">All Movies</span>
-          <input className="mainsearchbar mt-5" placeholder="Search here..." />
-        </div>
+      <div className="container mt-5 pt-5">
+      <div className='row mt-5'>
+      <div className='col'>
+          <h4>All Movies</h4>
+      </div>
+      <div className='col '>
+          <Form className="searchbar1">
+              <Form.Control
+                  type="search"
+                  placeholder="Search Here... "
+                  aria-label="Search"
+
+              /> </Form>
+      </div>
+  </div>
         <center>
           <span className="headingtwo">Filter</span>
           <select name="finestatus" className="moviedropdowntab">

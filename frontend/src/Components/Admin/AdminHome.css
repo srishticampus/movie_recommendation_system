@@ -1,0 +1,126 @@
+.admin-dashboard-movie-head {
+    color: #000;
+    font-family: Lato;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 30px;
+}
+
+/* Circle container */
+.circle-container {
+    position: relative;
+    width: 200px;
+    /* Circle size */
+    height: 200px;
+    /* Circle size */
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+
+}
+
+/* Progress ring wrapper */
+.progress-ring-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+}
+
+/* SVG Circle for the progress ring */
+.progress-ring {
+    transform: rotate(-90deg);
+    /* Start from top */
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: visible;
+}
+
+.progress-ring circle {
+    fill: transparent;
+    stroke-width: 15;
+}
+
+.progress-ring circle.background {
+    stroke: #ddd;
+}
+
+.progress-ring circle.foreground {
+    stroke: #CA0000;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.35s ease-in-out;
+}
+
+/* Value inside the circle */
+.circle-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    color: #333;
+    z-index: 3;
+}
+
+/* Row for the circles */
+.circle-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    gap: 30px;
+}
+
+.circle-label {
+    position: relative;
+    top: 230px;
+    text-align: center;
+    color: #000;
+    text-align: center;
+    font-family: Lato;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px;
+
+}
+
+.admin-dashboard-food-list{
+    color: #000;
+font-family: Lato;
+font-size: 24px;
+font-style: normal;
+font-weight: 700;
+line-height: 30px; /* 125% */
+margin-top: 80px;
+}
+
+.table-head-clr{
+    background-color: red ; /* Red background color */
+    color: white; /* White text color for contrast */
+  }
+  
+
+.admin-dashboard-viewall{
+    color: red;
+}
+
+
+
+
+@media (max-width:768px){
+    .circle-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        gap: 70px;
+    }
+    
+}

@@ -59,3 +59,16 @@ export const logout = () => {
   localStorage.removeItem("refreshToken");
   window.dispatchEvent(new Event("loginStatusChanged"));
 };
+
+const generateConfig = (isFormData = false, authRequired = true) => ({
+  headers: {
+    "Content-Type": isFormData ? "multipart/form-data" : "application/json",
+  },
+  authRequired,
+});
+
+export const movieList = async () => {
+  return handleResponse(
+    apiClient.get("/api/movies/movies/", generateConfig())
+  );
+};
