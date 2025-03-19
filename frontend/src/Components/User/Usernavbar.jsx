@@ -74,7 +74,6 @@ function UserNavbar() {
     //     "viewUserById",
     //     localStorage.getItem("user")
     //   );
-
     //   if (result.success) {
     //     console.log(result);
     //     if (result.user) {
@@ -260,7 +259,7 @@ function UserNavbar() {
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link text-light" to="/user_add_complaint">
+              <Link className="nav-link text-light" to="/user-watchedmovie">
                 Watched Movies
               </Link>
             </li>
@@ -312,7 +311,12 @@ function UserNavbar() {
             </li>
           </ul>
         </div>
-        <Offcanvas show={show} onHide={handleClose} placement="end"  className="bg-dark">
+        <Offcanvas
+          show={show}
+          onHide={handleClose}
+          placement="end"
+          className="bg-dark"
+        >
           <Offcanvas.Header
             className="profileheader"
             closeButton
@@ -320,9 +324,7 @@ function UserNavbar() {
           <div className="bg-dark">
             <div>
               {" "}
-              <img
-                className="userprofileimhg rounded-circle"
-              ></img>
+              <img className="userprofileimhg rounded-circle"></img>
               <div className="row">
                 <div className="col-2 "></div>
                 <div className="col-2 "></div>
@@ -336,22 +338,22 @@ function UserNavbar() {
                     <div className="text-light ms-3">Name : </div>
                     <b className="text-dark">{data?.userMail}</b>
                   </p>
-                  </div>
+                </div>
 
-                  <div className="col-6 ms-2">
-                    <p>
-                      <div className="text-light ms-3">E-mail : </div>
-                      <b className="text-dark">{data?.userContact}</b>
-                    </p>
-                  </div>
-                  <div className="text-center text-light">
-                    <button onClick={handleModalShow} className="btn btn-danger ">
-                      Edit
-                    </button>
-                  </div>
+                <div className="col-6 ms-2">
+                  <p>
+                    <div className="text-light ms-3">E-mail : </div>
+                    <b className="text-dark">{data?.userContact}</b>
+                  </p>
+                </div>
+                <div className="text-center text-light">
+                  <button onClick={handleModalShow} className="btn btn-danger ">
+                    Edit
+                  </button>
                 </div>
               </div>
             </div>
+          </div>
         </Offcanvas>
 
         <Modal show={modalShow} onHide={handleModalClose}>
@@ -593,7 +595,7 @@ function UserNavbar() {
               >
                 <div className="position-relative">
                   {/* Profile Picture */}
-                  
+
                   {/* Hidden File Input */}
                   <input
                     type="file"
@@ -677,7 +679,7 @@ function UserNavbar() {
                 </form>
               </div>
 
-              {/* Footer Section 
+              {/* Footer Section
               <div className="modal-footer">
                 <button type="button" className="bg_red" onClick={handleLogin}>
                   Save

@@ -91,3 +91,13 @@ export const addToWatchList = async (movieId) => {
     ),
   );
 };
+
+export const getWatchList = async () => {
+  return handleResponse(
+    apiClient.get(`/api/movies/watchlist/`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    }),
+  );
+};

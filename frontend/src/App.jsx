@@ -22,6 +22,7 @@ import AdminHome from "./Components/Admin/AdminHome";
 import Adminviewmovies from "./Components/Admin/Adminviewmovies";
 import AdminContact from "./Components/Admin/AdminContact";
 import MovieDetailedPage from "./Components/Admin/MovieDetailedPage";
+import UserWatchedmovie from "./Components/User/UserWatchedMovie";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
           path="/user-recommendedmovie"
           element={<UserRecomendedmovie />}
         />
+        <Route path="/user-watchedmovie" element={<UserWatchedmovie />} />
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/admin-viewusers" element={<AdminViewUsers />} />
         <Route path="/admin-home" element={<AdminHome />} />

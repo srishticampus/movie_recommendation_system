@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import FooterLandingPage from "../LandingPages/FooterLandingPage";
 import Usernavbar from "./Usernavbar";
+import { getMovies } from "../../Services/apiService";
 
 function Carousel({ groupedCards = [] }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -17,7 +18,7 @@ function Carousel({ groupedCards = [] }) {
     setActiveIndex(
       (prevIndex) =>
         (prevIndex - 1 + (groupedCards.length || 1)) %
-        (groupedCards.length || 1)
+        (groupedCards.length || 1),
     );
   };
 
@@ -74,6 +75,21 @@ function UserHome() {
   const id = localStorage.getItem("user");
   const [userDetails, setUserDetails] = useState({});
 
+  useEffect(() => {
+    const fetchInitialMovies = async () => {
+      try {
+        const data = await getMovies(1, "", "thriller");
+        console.log(data.data.movies);
+        data.data.movies.length = 4;
+        setData(data.data.movies);
+      } catch (error) {
+        console.error("Error fetching movies:", error);
+      }
+    };
+
+    fetchInitialMovies();
+  }, []);
+
   // useEffect(() => {
   //   const fetchData = async () => {
   //     try {
@@ -129,21 +145,21 @@ function UserHome() {
       <div className="landing-sec2">
         <p className="landing-div2 mt-5 mb-5">Now Showing Movies</p>
       </div>
-      <div className="row g-4">
+      <div className="bg-black row g-4 p-3">
         {data.map((item) => (
-          <div className="col-md-3" key={item.id}>
-            <div className="card h-100" style={{ width: "18rem" }}>
-              <img
-                src={`${IMG_BASE_URL}/${item.movieImage?.filename}`}
-                alt={item.movieName}
-              />
-              <p>{item.movieName}</p>
+          <div className=" col-md-3" key={item.id}>
+            <div
+              className="card h-100 bg-black text-white"
+              style={{ width: "18rem" }}
+            >
+              <img src={item.poster_url} alt={item.title} />
+              <p>{item.title}</p>
               <p>{item.duration}</p>
             </div>
           </div>
         ))}
       </div>
-      <div className="landing-sec3 mt-5">
+      <div className="landing-sec3 ">
         <p className="key_features">KEY FEATURES</p>
         <p className="All_You_Need">
           All You Need for the Perfect Movie Experience
@@ -155,7 +171,7 @@ function UserHome() {
           {/* Key features cards */}
           <div className="cardSec3_Cards" style={{ flex: "1 1 22%" }}>
             <p className="Sec3_Cards_Sec_header">
-              "Personalized Recommendations"
+              &quot;Personalized Recommendations&quot;
             </p>
             <div className="card-body Sec3_card_body">
               <p>
@@ -168,7 +184,7 @@ function UserHome() {
           </div>
           <div className="cardSec3_Cards" style={{ flex: "1 1 22%" }}>
             <p className="Sec3_Cards_Sec_header">
-              "Create and Manage Your Watch List"
+              &quot;Create and Manage Your Watch List&quot;
             </p>
             <div className="card-body Sec3_card_body">
               <p>
@@ -180,7 +196,9 @@ function UserHome() {
             </div>
           </div>
           <div className="cardSec3_Cards" style={{ flex: "1 1 22%" }}>
-            <p className="Sec3_Cards_Sec_header">"Rate and Review Movies"</p>
+            <p className="Sec3_Cards_Sec_header">
+              &quot;Rate and Review Movies&quot;
+            </p>
             <div className="card-body Sec3_card_body">
               <p>
                 Express your love (or critique) for every movie you watch! Rate
@@ -192,7 +210,7 @@ function UserHome() {
           </div>
           <div className="cardSec3_Cards" style={{ flex: "1 1 22%" }}>
             <p className="Sec3_Cards_Sec_header">
-              "Watch Instantly on Any Device"
+              &quot;Watch Instantly on Any Device&quot;
             </p>
             <div className="card-body Sec3_card_body">
               <p>
