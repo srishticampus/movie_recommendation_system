@@ -72,3 +72,35 @@ export const movieList = async () => {
     apiClient.get("/api/movies/movies/", generateConfig())
   );
 };
+
+
+export const getWatchedMovies = async () => {
+  return handleResponse(
+    apiClient.get("/api/movies/watched/", generateConfig())
+  );
+};
+
+
+export const getMoviesByGenre = async (genre) => {
+  return handleResponse(
+    apiClient.get(`/api/movies/movies/?genre=${genre}`, generateConfig())
+  );
+};
+
+
+export const getMovieById = async (movieId) => {
+  return handleResponse(
+    apiClient.get(`/api/movies/movies/${movieId}/`, generateConfig())
+  );
+};
+
+
+export const addToWatchlist = async (movieId) => {
+  return handleResponse(
+    apiClient.post(
+      "/api/movies/add-to-watchlist/",
+      { movie_id: movieId },
+      generateConfig()
+    )
+  );
+};
