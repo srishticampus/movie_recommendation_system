@@ -13,7 +13,13 @@ the system.
 
 # Custom User Manager
 class CustomUserManager(BaseUserManager):
+    """
+    Custom user model manager where email is the unique identifiers for authentication instead of usernames.
+    """
     def create_user(self, email, password=None, **extra_fields):
+        """
+         custom create user function including email
+        """
         if not email:
             raise ValueError('The Email field must be set')
         email = self.normalize_email(email)
@@ -24,6 +30,9 @@ class CustomUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
+        """
+        Custom super user create function with email instead of username
+        """
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         # Ensure full_name is set, otherwise provide a default
@@ -33,6 +42,9 @@ class CustomUserManager(BaseUserManager):
 
 # Custom User Model
 class User(AbstractUser):
+    """
+    Custom User model to replace the default User model
+    """
     username = None
     email = models.EmailField(unique=True)
     full_name = models.CharField(max_length=255, blank=True, null=True)  # Check this field
@@ -47,3 +59,15 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+#ContactMessage model
+class ContactMessage(models.Model):
+    """
+    model to store contact messages from users
+    """
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)  # Automatically set timestamp
+
+    def __str__(self):
+        return f"{self.name} - {self.email}"

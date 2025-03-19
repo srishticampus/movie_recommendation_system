@@ -8,12 +8,12 @@ related features, using Django REST Framework.
 import requests
 from django.conf import settings
 from rest_framework import permissions,generics
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, NotFound
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from .models import Rating, Movie
-from .serializers import RatingSerializer
+from .models import Rating, Movie,MovieWatchList
+from .serializers import RatingSerializer,MovieSerializer
 # Create your views here.
 
 class MovieListView(APIView):
@@ -31,7 +31,7 @@ class MovieListView(APIView):
             response.raise_for_status()
             genres = response.json().get("genres", [])
             return {genre["id"]: genre["name"] for genre in genres}  # Map genre ID to name
-        except (requests.RequestException, requests.Timeout) as e:
+        except (requests.RequestException, requests.Timeout):
             return {}
 
     def get_tmdb_movies(self, page=1, genre_id=None, query=None):
@@ -148,7 +148,7 @@ class MovieDetailView(APIView):
 
 class AddMovieToWatchlistView(APIView):
     """
-    API to add a movie to the Movie table before allowing users to rate it.
+    API to add a movie to a user's watchlist.
     """
     permission_classes = [permissions.IsAuthenticated]
 
@@ -164,7 +164,7 @@ class AddMovieToWatchlistView(APIView):
             return {"error": str(e)}
 
     def post(self, request):
-        """Handle POST request to add a movie to the database."""
+        """Handle POST request to add a movie to the user's watchlist."""
         movie_id = request.data.get("movie_id")
 
         if not movie_id:
@@ -173,38 +173,81 @@ class AddMovieToWatchlistView(APIView):
         if not str(movie_id).isdigit():
             return Response({"error": "Invalid movie ID format."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Check if the movie already exists in the database
-        if Movie.objects.filter(id=movie_id).exists():
-            return Response({"message": "Movie already exists in watchlist."}, status=status.HTTP_200_OK)
-
-        # Fetch movie details from TMDb
-        movie_data = self.get_movie_details(movie_id)
-        if "error" in movie_data:
-            return Response({"error": movie_data["error"]}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
-
-        # Save movie details in the Movie model
-        movie = Movie.objects.create(
-            id=movie_data["id"],
-            title=movie_data.get("title", "N/A"),
-            release_date=movie_data.get("release_date", None),
-            rating=movie_data.get("vote_average", 0.0),
-            plot=movie_data.get("overview", ""),
-            language=movie_data.get("original_language", ""),
-            poster_url=f"https://image.tmdb.org/t/p/w500{movie_data.get('poster_path')}" if movie_data.get("poster_path") else None,
+        # Check if the movie exists in the database
+        movie, created = Movie.objects.get_or_create(
+            tmdb_id=movie_id,
+            defaults={
+                "title": "N/A",  # Placeholder title, will be updated below
+            }
         )
 
+        # If the movie was just created, fetch its details from TMDb
+        if created:
+            movie_data = self.get_movie_details(movie_id)
+            if "error" in movie_data:
+                movie.delete()  # Delete the placeholder movie if fetching details fails
+                return Response({"error": movie_data["error"]}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            movie.title = movie_data.get("title", "N/A")
+            movie.save()
+
+        # Check if the movie is already in the user's watchlist
+        if MovieWatchList.objects.filter(user=request.user, movie=movie).exists():
+            return Response({"message": "Movie already exists in your watchlist."}, status=status.HTTP_200_OK)
+
+        # Add the movie to the user's watchlist
+        MovieWatchList.objects.create(user=request.user, movie=movie)
+
         return Response({
-            "message": "Movie added to watchlist successfully.",
+            "message": "Movie added to your watchlist successfully.",
             "movie": {
-                "id": movie.id,
+                "tmdb_id": movie.tmdb_id,
                 "title": movie.title,
-                "release_date": movie.release_date,
-                "rating": movie.rating,
-                "plot": movie.plot,
-                "poster_url": movie.poster_url,
-                "language": movie.language,
             }
         }, status=status.HTTP_201_CREATED)
+
+class WatchlistView(generics.ListAPIView):
+    """
+    API to fetch the movies in the current user's watchlist.
+    """
+    serializer_class = MovieSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        """
+        Return the movies in the current user's watchlist.
+        """
+        user = self.request.user
+        # Fetch the movies in the user's watchlist
+        watchlist_movies = MovieWatchList.objects.filter(user=user).values_list('movie', flat=True)
+        # Fetch the Movie objects for the movies in the watchlist
+        movies = Movie.objects.filter(id__in=watchlist_movies)
+
+        # Check if any movies in the watchlist no longer exist in the database
+        if len(watchlist_movies) != movies.count():
+            raise ValidationError({"detail": "Some movies in your watchlist no longer exist in the database."})
+
+        return movies
+
+    def list(self, request, *args, **kwargs):
+        """
+        Override the list method to handle custom responses.
+        """
+        try:
+            queryset = self.get_queryset()
+
+            # Check if the watchlist is empty
+            if not queryset.exists():
+                return Response(
+                    {"detail": "Your watchlist is empty. Add movies to your watchlist to see them here."},
+                    status=status.HTTP_204_NO_CONTENT
+                )
+
+            # Serialize the movies in the watchlist
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except ValidationError as e:
+            return Response(e.detail, status=status.HTTP_404_NOT_FOUND)
 
 class RatingView(generics.CreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
     """
@@ -219,24 +262,37 @@ class RatingView(generics.CreateAPIView, generics.UpdateAPIView, generics.Destro
         """
         return Rating.objects.filter(user=self.request.user)
 
+    def get_object(self):
+        """
+        Fetch the rating object for update/delete actions.
+        """
+        queryset = self.get_queryset()
+        obj = generics.get_object_or_404(queryset, pk=self.kwargs['pk'])
+        return obj
+
     def perform_create(self, serializer):
         """
         Create a new rating or update an existing one if it exists.
         """
         user = self.request.user
-        movie_id = self.request.data.get('movie')
+        movie_tmdb_id = self.request.data.get('movie')  # Use tmdb_id instead of id
 
         try:
-            movie = Movie.objects.get(id=movie_id)
+            # Look up the movie by tmdb_id
+            movie = Movie.objects.get(tmdb_id=movie_tmdb_id)
         except Movie.DoesNotExist as exc:
-            raise ValidationError({"movie": "Movie not found."}) from exc
+            raise ValidationError({"movie": "Movie not found in the database."}) from exc
 
         # Check if the user already rated this movie
         existing_rating = Rating.objects.filter(user=user, movie=movie).first()
         if existing_rating:
             raise ValidationError({"rating": "You have already rated this movie. Use update instead."})
 
+        # Save the new rating
         serializer.save(user=user, movie=movie)
+
+        # Recalculate and update the average rating for the movie
+        self.update_movie_average_rating(movie)
 
     def perform_update(self, serializer):
         """
@@ -246,7 +302,11 @@ class RatingView(generics.CreateAPIView, generics.UpdateAPIView, generics.Destro
         if instance.user != self.request.user:
             raise ValidationError({"error": "You can only update your own rating."})
 
+        # Save the updated rating
         serializer.save()
+
+        # Recalculate and update the average rating for the movie
+        self.update_movie_average_rating(instance.movie)
 
     def perform_destroy(self, instance):
         """
@@ -255,4 +315,42 @@ class RatingView(generics.CreateAPIView, generics.UpdateAPIView, generics.Destro
         if instance.user != self.request.user:
             raise ValidationError({"error": "You can only delete your own rating."})
 
+        movie = instance.movie
         instance.delete()
+
+        # Recalculate and update the average rating for the movie
+        self.update_movie_average_rating(movie)
+
+    def update_movie_average_rating(self, movie):
+        """
+        Recalculate and update the average rating for the movie.
+        """
+        avg_rating = movie.average_user_rating()
+        movie.average_rating = avg_rating
+        movie.save()
+
+class UserRatingForMovieView(generics.RetrieveAPIView):
+    """
+    API to fetch the current user's rating for a specific movie.
+    """
+    serializer_class = RatingSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        """
+        Fetch the current user's rating for the specified movie.
+        """
+        user = self.request.user
+        movie_tmdb_id = self.kwargs.get('movie_tmdb_id')
+
+        try:
+            movie = Movie.objects.get(tmdb_id=movie_tmdb_id)
+        except Movie.DoesNotExist as exc:
+            raise NotFound("Movie not found in the database.") from exc
+
+        # Fetch the user's rating for the movie
+        rating = Rating.objects.filter(user=user, movie=movie).first()
+        if not rating:
+            raise NotFound("You have not rated this movie yet.")
+
+        return rating

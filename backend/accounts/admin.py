@@ -4,7 +4,7 @@ This module contains the admin configuration for the accounts app.
 """
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User
+from .models import User,ContactMessage
 
 # Registering the User model in the admin panel
 @admin.register(User)
@@ -31,6 +31,18 @@ class UserAdmin(BaseUserAdmin):
     )
 
     def get_fieldsets(self, request, obj=None):
+        """
+        Custom fieldsets for the User model.
+        """
         if not obj:
             return self.add_fieldsets
         return super().get_fieldsets(request, obj)
+
+# Registering the ContactMessage model in the admin panel
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    """
+    Admin class for the ContactMessage
+    """
+    list_display = ("name", "email", "created_at")
+    search_fields = ("name", "email", "description")
