@@ -59,6 +59,19 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+class Profile(models.Model):
+    """
+    Profile model to store additional user details.
+    """
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                                related_name='profile')
+    profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user.email}'s Profile"
+
 #ContactMessage model
 class ContactMessage(models.Model):
     """
