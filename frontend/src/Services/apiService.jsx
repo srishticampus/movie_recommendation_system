@@ -89,5 +89,48 @@ export const addToWatchList = async (movieId) => {
         },
       },
     ),
+=======
+const generateConfig = (isFormData = false, authRequired = true) => ({
+  headers: {
+    "Content-Type": isFormData ? "multipart/form-data" : "application/json",
+  },
+  authRequired,
+});
+
+export const movieList = async () => {
+  return handleResponse(
+    apiClient.get("/api/movies/movies/", generateConfig())
+  );
+};
+
+
+export const getWatchedMovies = async () => {
+  return handleResponse(
+    apiClient.get("/api/movies/watched/", generateConfig())
+  );
+};
+
+
+export const getMoviesByGenre = async (genre) => {
+  return handleResponse(
+    apiClient.get(`/api/movies/movies/?genre=${genre}`, generateConfig())
+  );
+};
+
+
+export const getMovieById = async (movieId) => {
+  return handleResponse(
+    apiClient.get(`/api/movies/movies/${movieId}/`, generateConfig())
+  );
+};
+
+
+export const addToWatchlist = async (movieId) => {
+  return handleResponse(
+    apiClient.post(
+      "/api/movies/add-to-watchlist/",
+      { movie_id: movieId },
+      generateConfig()
+    )
   );
 };

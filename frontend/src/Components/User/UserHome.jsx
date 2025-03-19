@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import FooterLandingPage from "../LandingPages/FooterLandingPage";
 import Usernavbar from "./Usernavbar";
-
+import { movieList } from "../../Services/apiService";
+import {IMG_BASE_URL} from "../../Services/Baseurl"
 function Carousel({ groupedCards = [] }) {
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -90,21 +91,23 @@ function UserHome() {
   //   fetchData();
   // }, []);
 
-  // useEffect(() => {
-  //   const fetchData2 = async () => {
-  //     try {
-  //       const result = await viewCount("nowShowingMovies");
-  //       if (result.success) {
-  //         setData(result.user.length > 0 ? result.user : []);
-  //       } else {
-  //         toast.error(result.message);
-  //       }
-  //     } catch (error) {
-  //       toast.error(error, "An unexpected error occurred during Data View");
-  //     }
-  //   };
-  //   fetchData2();
-  // }, []);
+  useEffect(() => {
+    const fetchData2 = async () => {
+      try {
+        const result = await movieList();
+        console.log(result);
+        
+        if (result.success==true) {
+          setData(result.data.movies);
+        } else {
+          toast.error(result.message);
+        }
+      } catch (error) {
+        toast.error(error, "An unexpected error occurred during Data View");
+      }
+    };
+    fetchData2();
+  }, []);
 
   // useEffect(() => {
   //   const fetchData3 = async () => {
@@ -126,23 +129,25 @@ function UserHome() {
     <div>
       <Usernavbar />
       <UserLandingBanner className="userLandingBanner" />
-      <div className="landing-sec2">
+      <div className=" landing-sec2">
         <p className="landing-div2 mt-5 mb-5">Now Showing Movies</p>
-      </div>
-      <div className="row g-4">
+        <div className="container">
+        <div className="row g-4">
         {data.map((item) => (
           <div className="col-md-3" key={item.id}>
-            <div className="card h-100" style={{ width: "18rem" }}>
+            <div className="card h-100" style={{ width: "15rem" }}>
               <img
-                src={`${IMG_BASE_URL}/${item.movieImage?.filename}`}
-                alt={item.movieName}
+                src={item?.poster_url}
+                alt={item?.title}
               />
-              <p>{item.movieName}</p>
-              <p>{item.duration}</p>
+              <p>{item?.title}</p>
+              <p>{item?.rating}</p>
             </div>
           </div>
         ))}
       </div>
+      </div></div>
+
       <div className="landing-sec3 mt-5">
         <p className="key_features">KEY FEATURES</p>
         <p className="All_You_Need">

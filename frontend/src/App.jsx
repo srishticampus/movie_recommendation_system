@@ -22,6 +22,10 @@ import AdminHome from "./Components/Admin/AdminHome";
 import Adminviewmovies from "./Components/Admin/Adminviewmovies";
 import AdminContact from "./Components/Admin/AdminContact";
 import MovieDetailedPage from "./Components/Admin/MovieDetailedPage";
+import UseViewAllMovieList from "./Components/User/UseViewAllMovieList";
+import UserViewWatchedMovie from "./Components/User/UserViewWatchedMovie";
+import SavedMoviesList from "./Components/User/SavedMoviesList";
+import UserViewMovieDetails from "./Components/User/UserViewMovieDetails";
 
 function App() {
   return (

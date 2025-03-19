@@ -6,6 +6,7 @@ import "../Admin/AdminviewMovie.css";
 import { useState, useEffect } from "react";
 import { getMovies, addToWatchList } from "../../Services/apiService";
 // import countryCodeToFlagEmoji from "country-code-to-flag-emoji";
+import Form from 'react-bootstrap/Form';
 
 function UserRecomendedmovie() {
   const [movies, setMovies] = useState([]);
@@ -64,8 +65,21 @@ function UserRecomendedmovie() {
   return (
     <div>
       <UserNavbar />
-      <div className="container mt-5">
-        <div className="Mainheading mt-5 pt-5"></div>
+      <div className="container mt-5 pt-5">
+      <div className='row mt-5'>
+      <div className='col'>
+          <h4>Recommended Movies</h4>
+      </div>
+      <div className='col '>
+          <Form className="searchbar1">
+              <Form.Control
+                  type="search"
+                  placeholder="Search Here... "
+                  aria-label="Search"
+
+              /> </Form>
+      </div>
+  </div>
         <center>
           <span className="headingone m-5">All Movies</span>
           <input

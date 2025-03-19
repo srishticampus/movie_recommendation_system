@@ -255,12 +255,17 @@ function UserNavbar() {
               </Link>
             </li>
             <li className="nav-item">
+            <Link className="nav-link text-light" to="/user-view-all-movie">
+              Movies
+            </Link>
+          </li>
+            <li className="nav-item">
               <Link className="nav-link text-light" to="/user-recommendedmovie">
                 Recommended Movies
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link text-light" to="/user_add_complaint">
+              <Link className="nav-link text-light" to="/user-view-watched-movie">
                 Watched Movies
               </Link>
             </li>
@@ -278,7 +283,7 @@ function UserNavbar() {
         >
           <ul className="navbar-nav">
             <li className="nav-item">
-              <Link className="nav-link text-light" to="/user_add_complaint">
+              <Link className="nav-link text-light" to="/user-saved-movies">
                 <img src={save}></img>
               </Link>
             </li>

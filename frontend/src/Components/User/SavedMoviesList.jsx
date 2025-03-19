@@ -1,17 +1,17 @@
-import AdminNavbar from "./AdminNavbar";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Star from "../../assets/Star.png";
+import UserNavbar from "./Usernavbar";
 import Form from 'react-bootstrap/Form';
 
-function Adminviewmovies() {
+function SavedMoviesList() {
   return (
     <div>
-      <AdminNavbar />
-      <div className="container mt-5 pt-5">
+      <UserNavbar />
+      <div className="container mt-5 pt-3">
       <div className='row mt-5'>
       <div className='col'>
-          <h4>All Movies</h4>
+          <h4>Saved Movies</h4>
       </div>
       <div className='col '>
           <Form className="searchbar1">
@@ -78,4 +78,4 @@ function Adminviewmovies() {
   );
 }
 
-export default Adminviewmovies;
+export default SavedMoviesList;
