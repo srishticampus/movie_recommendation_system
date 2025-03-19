@@ -2,9 +2,9 @@
     background: url(../../assets/Aboutus_Background.png);
     background-repeat: no-repeat;
     background-size: cover;
+    background-color: black;
     height: 500px;
 }
-
 
 .Section_one_head1 {
     color: black;
@@ -15,10 +15,9 @@
     font-weight: 600;
     line-height: normal;
     text-transform: uppercase;
-  
 }
 .Section_one_div2 {
-    color: #D6D6D6;
+    color: #d6d6d6;
     text-align: center;
     font-family: Lato;
     font-size: 24px;
@@ -30,7 +29,7 @@
 }
 .Section_one_head2 {
     margin-top: 30px;
-    color: #D6D6D6;
+    color: #d6d6d6;
     text-align: center;
     font-family: Lato;
     font-size: 54px;
@@ -40,7 +39,7 @@
 }
 
 .Section_one_para {
-    color: #D6D6D6;
+    color: #d6d6d6;
     text-align: center;
     font-family: Lato;
     font-size: 14px;
@@ -62,7 +61,7 @@
 }
 
 .Section_two_righthead1 {
-    color: #D6D6D6;
+    color: #d6d6d6;
     font-family: Lato;
     font-size: 18px;
     font-style: normal;
@@ -72,7 +71,7 @@
 }
 
 .Section_two_righthead2 {
-    color: #D6D6D6;
+    color: #d6d6d6;
     font-family: Lato;
     font-size: 24px;
     font-style: normal;
@@ -81,33 +80,30 @@
 }
 
 .Section_two_rightpara {
-    color: #D6D6D6;
+    color: #d6d6d6;
     font-family: Lato;
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
-    line-height: 25px
+    line-height: 25px;
 }
 
 .Aboutus_Section_three {
     background: black;
-  
-    
 }
 
 .Section_three_head1 {
-    color: #D6D6D6;
+    color: #d6d6d6;
     font-family: Lato;
     font-size: 24px;
     font-style: normal;
     font-weight: 700;
     line-height: 25px;
     margin-bottom: 23px;
-
 }
 
 .Section_three_para1 {
-    color: #D6D6D6;
+    color: #d6d6d6;
     font-family: Lato;
     font-size: 14px;
     font-style: normal;
@@ -117,7 +113,7 @@
 }
 
 .Section_three_head2 {
-    color: #D6D6D6;
+    color: #d6d6d6;
     font-family: Lato;
     font-size: 18px;
     font-style: normal;
@@ -128,7 +124,7 @@
 }
 
 .Section_three_head3 {
-    color: #D6D6D6;
+    color: #d6d6d6;
     font-family: Lato;
     font-size: 24px;
     font-style: normal;
@@ -138,7 +134,7 @@
 }
 
 .Section_three_list {
-    color: #D6D6D6;
+    color: #d6d6d6;
     font-family: Lato;
     font-size: 14px;
     font-style: normal;
@@ -148,7 +144,7 @@
 }
 
 .Section_three_head4 {
-    color: #D6D6D6;
+    color: #d6d6d6;
     font-family: Lato;
     font-size: 24px;
     font-style: normal;
@@ -158,16 +154,15 @@
 }
 
 .Section_three_para2 {
-    color: #D6D6D6;
+    color: #d6d6d6;
     font-family: Lato;
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
     line-height: 25px;
-    margin-bottom: 0; 
+    margin-bottom: 0;
 }
-.Aboutus_Section_four{
+.Aboutus_Section_four {
     background-color: black;
     padding: 40px 0;
- 
 }

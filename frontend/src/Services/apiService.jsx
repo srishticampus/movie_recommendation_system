@@ -29,25 +29,25 @@ const handleResponse = async (apiCall) => {
 
 export const userSignup = async (data) => {
   return handleResponse(
-    apiClient.post("/api/register/", data, { authRequired: false })
+    apiClient.post("/api/register/", data, { authRequired: false }),
   );
 };
 
 export const login = async (data) => {
   // console.log("🔵 Attempting login...");
   const response = await handleResponse(apiClient.post("/api/login/", data));
-  if (response.success==true) {
+  if (response.success == true) {
     // console.log("✅ Login successful. Storing tokens...");
     console.log(response);
-    toast.success(" Login successful")
+    toast.success(" Login successful");
     localStorage.setItem("accessToken", response.data.data.access);
     localStorage.setItem("refreshToken", response.data.data.refresh);
     // localStorage.setItem("userId",)
     console.log("accessToken", response.data.access);
     window.dispatchEvent(new Event("loginStatusChanged"));
-  }else{
+  } else {
     console.log(response);
-    toast.error(" Login Failed")
+    toast.error(" Login Failed");
   }
   return response;
 };
@@ -60,6 +60,36 @@ export const logout = () => {
   window.dispatchEvent(new Event("loginStatusChanged"));
 };
 
+export const getMovies = async (page = 1, query = "", genre = "") => {
+  return handleResponse(
+    apiClient.get("/api/movies/movies", {
+      params: {
+        page,
+        query: query !== "" ? query : null,
+        genre: genre !== "" ? genre : null,
+      },
+    }),
+  );
+};
+
+export const getMovieDetails = async (movieId) => {
+  return handleResponse(apiClient.get(`/api/movies/${movieId}/`));
+};
+
+export const addToWatchList = async (movieId) => {
+  return handleResponse(
+    apiClient.post(
+      `/api/movies/add-to-watchlist/`,
+      {
+        movie_id: movieId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      },
+    ),
+=======
 const generateConfig = (isFormData = false, authRequired = true) => ({
   headers: {
     "Content-Type": isFormData ? "multipart/form-data" : "application/json",

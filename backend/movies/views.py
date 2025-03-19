@@ -11,9 +11,11 @@ from rest_framework import permissions,generics
 from rest_framework.exceptions import ValidationError, NotFound
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination
 from rest_framework import status
 from .models import Rating, Movie,MovieWatchList
 from .serializers import RatingSerializer,MovieSerializer
+from .recommendation_service import RecommendationService
 # Create your views here.
 
 class MovieListView(APIView):
@@ -371,6 +373,81 @@ class MovieRatingsView(generics.ListAPIView):
         try:
             # Fetch the movie by tmdb_id
             movie = Movie.objects.get(tmdb_id=movie_tmdb_id)
+        except Movie.DoesNotExist as exc:
+            raise NotFound("Movie not found in the database.") from exc
+
+        # Fetch all ratings for the movie
+        return Rating.objects.filter(movie=movie)
+
+class MovieRecommendationView(APIView):
+    """
+    API to fetch recommended movies based on the user's watchlist with pagination and genre filtering.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_tmdb_genres(self):
+        """Fetch genre list from TMDb"""
+        url = f"https://api.themoviedb.org/3/genre/movie/list?api_key={settings.TMDB_API_KEY}&language=en-US"
+        try:
+            response = requests.get(url, timeout=5)
+            response.raise_for_status()
+            genres = response.json().get("genres", [])
+            return {genre["id"]: genre["name"] for genre in genres}  # Map genre ID to name
+        except (requests.RequestException, requests.Timeout):
+            return {}
+
+    def get(self, request):
+        """
+        Fetch recommended movies for the current user with pagination and genre filtering.
+        """
+        user = request.user
+
+        # Fetch movies in the user's watchlist
+        watchlist_movies = MovieWatchList.objects.filter(user=user).values_list('movie__tmdb_id', flat=True)
+
+        # Get recommendations
+        recommendation_service = RecommendationService()
+        recommended_movies = recommendation_service.recommend_movies(watchlist_movies, n=100)  # Fetch more movies for pagination
+
+        # Apply genre filtering if a genre is provided
+        genre_name = request.GET.get("genre")  # Genre filter (name, not ID)
+        genre_mapping = self.get_tmdb_genres()
+        genre_id = next((id for id, name in genre_mapping.items() if genre_name and name.lower() == genre_name.lower()), None)
+
+        if genre_id:
+            # Filter recommended movies by genre
+            recommended_movies = [
+                movie for movie in recommended_movies
+                if genre_id in movie.get("genre_ids", [])
+            ]
+
+        # Paginate the results
+        paginator = PageNumberPagination()
+        paginator.page_size = 20  # Number of movies per page
+        paginated_movies = paginator.paginate_queryset(recommended_movies, request)
+
+        # Format the response in the same way as MovieListView
+        enriched_movies = [
+            {
+                "id": movie["id"],
+                "title": movie.get("title", "N/A"),
+                "release_date": movie.get("release_date", "N/A"),
+                "rating": movie.get("vote_average", "N/A"),
+                "plot": movie.get("overview", "N/A"),
+                "genres": [genre_mapping.get(gid, "Unknown") for gid in movie.get("genre_ids", [])],
+                "poster_url": f"https://image.tmdb.org/t/p/w500{movie.get('poster_path')}" if movie.get("poster_path") else None,
+                "language": movie.get("original_language", "N/A"),
+                "popularity": movie.get("popularity", "N/A"),
+                "vote_count": movie.get("vote_count", "N/A"),
+            }
+            for movie in paginated_movies
+        ]
+
+        return paginator.get_paginated_response({
+            "movies": enriched_movies,
+            "total_pages": paginator.page.paginator.num_pages,
+            "current_page": paginator.page.number,
+        })
         except Movie.DoesNotExist:
             raise NotFound("Movie not found in the database.")
 

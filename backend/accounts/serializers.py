@@ -12,7 +12,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
-from .models import User
+from .models import User,Profile
 
 class UserSerializer(serializers.ModelSerializer):
     """
@@ -49,6 +49,38 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+class ProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Profile model.
+    """
+    email = serializers.EmailField(source='user.email', read_only=True)
+    full_name = serializers.CharField(source='user.full_name')
+
+    class Meta:
+        """
+        Define the fields to include in the serializer.
+        """
+        model = Profile
+        fields = ['full_name', 'email', 'profile_pic', 'phone_number']
+
+    def update(self, instance, validated_data):
+        """
+        Update the profile and associated user fields.
+        """
+        user_data = validated_data.pop('user', {})
+        user = instance.user
+
+        # Update user fields
+        for attr, value in user_data.items():
+            setattr(user, attr, value)
+        user.save()
+
+        # Update profile fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        return instance
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     """
