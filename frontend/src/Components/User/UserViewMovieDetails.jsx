@@ -1,15 +1,16 @@
 import { CardGroup, Row, Col } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import a from "../../assets/Aboutus_Background.png";
-import "./Moviedetails.css";
+import "../Admin/Moviedetails.css";
 import star from "../../assets/Star.png"
 import { FaRegBookmark } from "react-icons/fa6";
 import { IoMdPlay } from "react-icons/io";
-import AdminNavbar from "./AdminNavbar";
-function MovieDetailedPage() {
+import UserNavbar from "./Usernavbar";
+
+function UserViewMovieDetails() {
   return (
     <div>
-    <AdminNavbar/>
+    <UserNavbar/>
     <div className='customermovieviewdetailssect1'>
         <img src={a} alt="demontebgimg" id='customermovieviewdetailssect1bgimg'/>
         <div className='customermovieviewdetailssect1details'>
@@ -202,4 +203,4 @@ function MovieDetailedPage() {
   );
 }
 
-export default MovieDetailedPage;
+export default UserViewMovieDetails;

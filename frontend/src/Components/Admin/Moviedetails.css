@@ -1,90 +1,198 @@
-.customermoviedescsect{
-    margin:100px;
+/* .customermovieviewdetailssect1 {
+  overflow: hidden;
+} */
+#customermovieviewdetailssect1bgimg {
+  width: 100%;
+  height: 604px;
+  z-index: -1;
+  position: absolute;
 }
-.customermoviedescsectheading{
-    font-weight: bold;
-    font-size: 30px;
+.customermovieviewdetailssect1details {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+  width: 100%;
+  height: 604px;
+  z-index: 1;
+  position: relative;
+  padding-left: 100px;
+  padding-top: 150px;
 }
-.customermoviedescsectcontent,.customermoviedescsectratingcardtext,.customermovierecommendcardtext{
-    color:grey;
+#customermovieviewdetailssect1posterimg {
+  width: 220px;
+  height: 330px;
+  border-radius: 20px;
 }
-.customermoviedescsectcastcardgroup{
-    width: 375px;
-    gap: 15px;
+.customermovieviewdetailssect1detailscol2 {
+  color: white;
+  padding-top: 30px;
+  padding-left: 50px;
 }
-.customermoviedescsectcastsinglecard,.customermoviedescsectrecommendsinglecard{
-    border:none;
+#customermovieviewdetailsdemontename {
+  font-size: 32px;
+  font-weight: 500;
 }
-.customermoviedescimg{
-    width: 100px;
-    height:126px;
-    border-radius: 5px;
+#customermovieviewdetailsdemonterating {
+  background-color: #a0a0a066;
+  border: none;
+  border-radius: 50px;
+  padding-right: 18px;
+  padding-left: 13px;
 }
-.customermoviecardtitle{
-    font-size: 13px;
-    font-weight: 600;
+#customermovieviewdetailsdemonteratingvalue {
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
 }
-.customermoviecardtext,.customermoviedescsectratingcount{
-    font-size:13px;
-    color:grey;
-    font-weight: 500;
+#customermovieviewdetailsdemonteratingtotal {
+  color: white;
+  font-size: 12px;
 }
-.customermovieratingcardheader{
-    font-weight: 500;
+.customermovieviewdetailsdemontemovietype {
+  background-color: #a0a0a066;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  border-radius: 5px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-right: 20px;
+  padding-left: 20px;
+  margin-top: 25px;
 }
-.customermoviedescsectratingcardfooter{
-    font-weight: bold;
-    font-size:10px;
-    color:grey;
+#customermovieviewdetailsdemontemoviegenre {
+  font-size: 16px;
+  font-weight: 700;
+  padding-top: 3px;
+  padding-bottom: 3px;
 }
-.customermoviedescsectratingcardgroup,.customermoviedescsectratingcardgrouprow{
-    padding-left: 7px;
-    padding-right: 15px;
-    padding-bottom: 15px;
+#customermovieviewdetailsdemontemovietime {
+  font-size: 14px;
+  font-weight: 600;
+  padding-top: 3px;
+  padding-bottom: 3px;
 }
-.customermoviedescsectratingsinglecard{
-    padding: 15px;
-    border-radius: 20px;
-    height: 148px;
-
-
+#customermovieviewdetailsdemontewatchnowbtn {
+  background-color: #c42a2a;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-right: 19px;
+  padding-left: 19px;
+  margin-top: 20px;
+  gap: 10px;
 }
-.customermovieratingcardbody{
-    padding:5px;
+#customermovieviewdetailsdemontemarkbtn {
+  background-color: #373737cc;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-right: 19px;
+  padding-left: 19px;
+  margin-top: 15px;
+  gap: 10px;
 }
-#customermoviedescsectratingbtn{
-    border:none;
-    border-radius: 25px;
-    background-color: #C42A2A;
-    color: white;
-    padding-left: 19px;
-    padding-right: 19px;
-    padding-bottom: 10px;
-    padding-top: 10px;
+#customermovieviewdetailsdemontebookmark {
+  background-color: #373737cc;
+  color: white;
+  border: none;
+  border-radius: 100px;
+  padding: 10px;
+  gap: 10px;
 }
-.customermoviedescsectratingbtntitle{
-    padding: 15px;
-    font-weight: 500;
+.customermoviedescsect {
+  margin: 100px;
 }
-#customermoviedescsectratingtotal{
-    font-weight: 350;
-    font-size: 25px;
+.customermoviedescsectheading {
+  font-weight: bold;
+  font-size: 30px;
 }
-#customermoviedescsectcurrentrating{
-    padding-left: 15px;
-    font-size: 70px;
-    font-weight: 500;
+.customermoviedescsectcontent,
+.customermoviedescsectratingcardtext,
+.customermovierecommendcardtext {
+  color: grey;
 }
-.customermoviedescsectrecommendcardgroup{
-    width: 1300px;
-    height:365px;
-    gap: 15px;
+.customermoviedescsectcastcardgroup {
+  width: 375px;
+  gap: 15px;
 }
-.customermoviedescrecommendmovieimg{
-    width:20px;
-    height: 20px;
-    border-radius:25px;
+.customermoviedescsectcastsinglecard,
+.customermoviedescsectrecommendsinglecard {
+  border: none;
 }
-.customermoviedescsectrecommendcardsect{
-    padding-top: 20px;
+.customermoviedescimg {
+  width: 100px;
+  height: 126px;
+  border-radius: 5px;
+}
+.customermoviecardtitle {
+  font-size: 13px;
+  font-weight: 600;
+}
+.customermoviecardtext,
+.customermoviedescsectratingcount {
+  font-size: 13px;
+  color: grey;
+  font-weight: 500;
+}
+.customermovieratingcardheader {
+  font-weight: 500;
+}
+.customermoviedescsectratingcardfooter {
+  font-weight: bold;
+  font-size: 10px;
+  color: grey;
+}
+.customermoviedescsectratingcardgroup,
+.customermoviedescsectratingcardgrouprow {
+  padding-left: 7px;
+  padding-right: 15px;
+  padding-bottom: 15px;
+}
+.customermoviedescsectratingsinglecard {
+  padding: 15px;
+  border-radius: 20px;
+  height: 148px;
+}
+.customermovieratingcardbody {
+  padding: 5px;
+}
+#customermoviedescsectratingbtn {
+  border: none;
+  border-radius: 25px;
+  background-color: #c42a2a;
+  color: white;
+  padding-left: 19px;
+  padding-right: 19px;
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+.customermoviedescsectratingbtntitle {
+  padding: 15px;
+  font-weight: 500;
+}
+#customermoviedescsectratingtotal {
+  font-weight: 350;
+  font-size: 25px;
+}
+#customermoviedescsectcurrentrating {
+  padding-left: 15px;
+  font-size: 70px;
+  font-weight: 500;
+}
+.customermoviedescsectrecommendcardgroup {
+  width: 1300px;
+  height: 365px;
+  gap: 15px;
+}
+.customermoviedescrecommendmovieimg {
+  width: 20px;
+  height: 20px;
+  border-radius: 25px;
+}
+.customermoviedescsectrecommendcardsect {
+  padding-top: 20px;
 }
