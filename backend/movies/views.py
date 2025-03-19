@@ -448,8 +448,3 @@ class MovieRecommendationView(APIView):
             "total_pages": paginator.page.paginator.num_pages,
             "current_page": paginator.page.number,
         })
-        except Movie.DoesNotExist:
-            raise NotFound("Movie not found in the database.")
-
-        # Fetch all ratings for the movie
-        return Rating.objects.filter(movie=movie)
