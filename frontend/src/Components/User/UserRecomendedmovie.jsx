@@ -4,7 +4,7 @@ import Star from "../../assets/Star.png";
 import UserNavbar from "./Usernavbar";
 import "../Admin/AdminviewMovie.css";
 import { useState, useEffect } from "react";
-import { getMovies, addToWatchList } from "../../Services/apiService";
+import { getRecommendations, addToWatchList } from "../../Services/apiService";
 // import countryCodeToFlagEmoji from "country-code-to-flag-emoji";
 import Form from 'react-bootstrap/Form';
 
@@ -16,7 +16,7 @@ function UserRecomendedmovie() {
 
   const fetchMovies = async () => {
     try {
-      const data = await getMovies(1, searchQuery, selectedGenre, "", "", "");
+      const data = await getRecommendations(1, searchQuery, selectedGenre, "", "", "");
       console.log(data.data.movies);
       setMovies(data.data.movies);
       let genreList = new Set();
@@ -47,7 +47,7 @@ function UserRecomendedmovie() {
   useEffect(() => {
     const fetchInitialMovies = async () => {
       try {
-        const data = await getMovies(1, "", "");
+        const data = await getRecommendations(1, "", "");
         console.log(data.data.movies);
         setMovies(data.data.movies);
         let genreList = new Set();
