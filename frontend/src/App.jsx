@@ -22,7 +22,7 @@ import AdminHome from "./Components/Admin/AdminHome";
 import Adminviewmovies from "./Components/Admin/Adminviewmovies";
 import AdminContact from "./Components/Admin/AdminContact";
 import MovieDetailedPage from "./Components/Admin/MovieDetailedPage";
-import UseViewAllMovieList from "./Components/User/UseViewAllMovieList";
+import UserViewAllMovieList from "./Components/User/UserViewAllMovieList";
 import UserViewWatchedMovie from "./Components/User/UserViewWatchedMovie";
 import SavedMoviesList from "./Components/User/SavedMoviesList";
 import UserViewMovieDetails from "./Components/User/UserViewMovieDetails";
@@ -56,7 +56,7 @@ function App() {
         <Route path="/admin-viewmovies" element={<Adminviewmovies />} />
         <Route path="/admin-contact" element={<AdminContact />} />
         <Route path="/admin-viewmovieDetails" element={<MovieDetailedPage />} />
-        <Route path="/user-view-all-movie" element={<UseViewAllMovieList/>}/>
+        <Route path="/user-view-all-movie" element={<UserViewAllMovieList/>}/>
         <Route path="/user-view-watched-movie" element={<UserViewWatchedMovie/>}/>
         <Route path="/user-saved-movies" element={<SavedMoviesList/>}/>
         <Route path="/user" element={<UserViewMovieDetails/>}/>

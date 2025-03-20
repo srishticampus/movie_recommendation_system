@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { movieList, getMoviesByGenre } from "../../Services/apiService"; // Import API functions
+import { getMovies } from "../../Services/apiService"; // Import the getMovies function
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
-import Form from "react-bootstrap/Form";
 import UserNavbar from "./Usernavbar";
 
-function UseViewAllMovieList() {
+function UserViewAllMovieList() {
   const [movies, setMovies] = useState([]);
   const [error, setError] = useState(null);
 
@@ -19,7 +18,7 @@ function UseViewAllMovieList() {
   }, []);
 
   const fetchMovies = async () => {
-    const response = await movieList();
+    const response = await getMovies();
     if (response.success) {
       setMovies(response.data.movies);
     } else {
@@ -29,27 +28,19 @@ function UseViewAllMovieList() {
 
   // Handle filtering
   const handleFilter = async () => {
-    let filteredMovies = [];
+    const response = await getMovies(1, "", selectedGenre); // Use getMovies with genre filter
+    if (response.success) {
+      let filteredMovies = response.data.movies;
 
-    if (selectedGenre) {
-      const response = await getMoviesByGenre(selectedGenre);
-      console.log(response,"kk");
-      
-      if (response.success) {
-        filteredMovies = response.data.movies;
+      // Apply additional language filter if selected
+      if (selectedLanguage) {
+        filteredMovies = filteredMovies.filter((movie) => movie.language === selectedLanguage);
       }
+
+      setMovies(filteredMovies);
     } else {
-      const response = await movieList();
-      if (response.success) {
-        filteredMovies = response.data.movies;
-      }
+      setError("Failed to filter movies.");
     }
-
-    if (selectedLanguage) {
-      filteredMovies = filteredMovies.filter((movie) => movie.language === selectedLanguage);
-    }
-
-    setMovies(filteredMovies);
   };
 
   return (
@@ -73,18 +64,18 @@ function UseViewAllMovieList() {
             <option value="">Genre</option>
             <option value="comedy">Comedy</option>
             <option value="action">Action</option>
-            <option value="drama">Horror</option>
-            <option value="drama">Thriller</option>
-            <option value="drama">Documentary</option>
-            <option value="drama">Fantasy</option>
-            <option value="drama">Family</option>
-            <option value="drama">Adventure</option>
-            <option value="drama">Romance</option>
-            <option value="drama">Crime</option>
-            <option value="drama">Fiction</option>
-            <option value="drama">Science </option>
-            <option value="drama">TV Movie </option>
-            <option value="drama">Music </option>
+            <option value="horror">Horror</option>
+            <option value="thriller">Thriller</option>
+            <option value="documentary">Documentary</option>
+            <option value="fantasy">Fantasy</option>
+            <option value="family">Family</option>
+            <option value="adventure">Adventure</option>
+            <option value="romance">Romance</option>
+            <option value="crime">Crime</option>
+            <option value="fiction">Fiction</option>
+            <option value="science">Science</option>
+            <option value="tv_movie">TV Movie</option>
+            <option value="music">Music</option>
           </select>
 
           <select
@@ -96,9 +87,7 @@ function UseViewAllMovieList() {
             <option value="en">English</option>
             <option value="fr">French</option>
             <option value="es">Spanish</option>
-            <option value="it">Italic</option>
-            <option value="es">Spanish</option>
-
+            <option value="it">Italian</option>
           </select>
 
           <Button variant="danger" className="moviesearchtab" onClick={handleFilter}>
@@ -108,9 +97,9 @@ function UseViewAllMovieList() {
 
         {/* Movies List */}
         <div className="row mt-4">
-          { <p className="text-center">Loading movies...</p>}
+          {movies.length === 0 && !error && <p className="text-center">Loading movies...</p>}
           {error && <p className="text-center text-danger">{error}</p>}
-          {movies.length === 0 && <p className="text-center">No movies found.</p>}
+          {movies.length === 0 && !error && <p className="text-center">No movies found.</p>}
 
           {movies.map((movie) => (
             <div key={movie.id} className="col-md-4 mb-4">
@@ -136,4 +125,4 @@ function UseViewAllMovieList() {
   );
 }
 
-export default UseViewAllMovieList;
+export default UserViewAllMovieList;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getWatchedMovies } from "../../Services/apiService";
+import { getWatchlist } from "../../Services/apiService";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
@@ -12,7 +12,7 @@ function UserViewWatchedMovie() {
 
   useEffect(() => {
     const fetchWatchedMovies = async () => {
-      const response = await getWatchedMovies();
+      const response = await getWatchlist();
       if (response.success) {
         setMovies(response.data);
       } else {
