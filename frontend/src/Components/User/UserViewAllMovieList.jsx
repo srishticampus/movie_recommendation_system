@@ -53,7 +53,7 @@ function UserViewAllMovieList() {
           </div>
         </div>
 
-        {/* Filter Section */}
+        {/* Filter Section 
         <center className="mt-2">
           <span className="headingtwo">Filter</span>
           <select
@@ -95,7 +95,7 @@ function UserViewAllMovieList() {
           </Button>
         </center>
 
-        {/* Movies List */}
+         Movies List 
         <div className="row mt-4">
           {movies.length === 0 && !error && <p className="text-center">Loading movies...</p>}
           {error && <p className="text-center text-danger">{error}</p>}
@@ -119,7 +119,7 @@ function UserViewAllMovieList() {
               </Card>
             </div>
           ))}
-        </div>
+        </div>*/}
       </div>
     </div>
   );
