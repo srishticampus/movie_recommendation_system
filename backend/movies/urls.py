@@ -4,7 +4,7 @@ Urls configuration page for the app movies
 """
 from django.urls import path
 from .views import (MovieListView,MovieDetailView,RatingView,AddMovieToWatchlistView,WatchlistView,
-                    UserRatingForMovieView,MovieRatingsView,MovieRecommendationView)
+                    UserRatingForMovieView,MovieRatingsView,MovieRecommendationView,TotalMoviesCountView)
 
 urlpatterns = [
     path('movies/', MovieListView.as_view(), name='movie-list'),
@@ -16,4 +16,5 @@ urlpatterns = [
     path('movies/<int:movie_tmdb_id>/my-rating/', UserRatingForMovieView.as_view(), name='user-rating-for-movie'),  # For fetching the user's rating for a movie
     path('movies/<int:movie_tmdb_id>/ratings/', MovieRatingsView.as_view(), name='movie-ratings'),  # For fetching all ratings for a movie
     path('recommendations/', MovieRecommendationView.as_view(), name='movie-recommendations'),
+    path('total-movies/', TotalMoviesCountView.as_view(), name='total-movies'),
 ]
