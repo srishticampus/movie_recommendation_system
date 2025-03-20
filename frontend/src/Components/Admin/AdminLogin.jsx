@@ -27,9 +27,9 @@ function AdminLogin() {
       newErrors.email = "Enter a valid email";
     }
   
-    if (!passwordRegex.test(data.password)) {
-      newErrors.password = "Password must be at least 6 characters long and include at least one letter, one number, and one special character.";
-    }
+    // if (!passwordRegex.test(data.password)) {
+    //   newErrors.password = "Password must be at least 6 characters long and include at least one letter, one number, and one special character.";
+    // }
   
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -45,7 +45,7 @@ function AdminLogin() {
     }
       const result = await login(data);
       if(result.success==true){
-        navigate("/user-home")
+        navigate("/admin-home")
       }
   }
   const handleChange = (e) => {

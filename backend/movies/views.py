@@ -251,6 +251,74 @@ class WatchlistView(generics.ListAPIView):
         except ValidationError as e:
             return Response(e.detail, status=status.HTTP_404_NOT_FOUND)
 
+class AllMoviesView(APIView):
+    """
+    API to fetch all movies stored in the Movie model with detailed information.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def get_tmdb_genres(self):
+        """Fetch genre list from TMDb"""
+        url = f"https://api.themoviedb.org/3/genre/movie/list?api_key={settings.TMDB_API_KEY}&language=en-US"
+        try:
+            response = requests.get(url, timeout=15)
+            response.raise_for_status()
+            genres = response.json().get("genres", [])
+            return {genre["id"]: genre["name"] for genre in genres}  # Map genre ID to name
+        except (requests.RequestException, requests.Timeout):
+            return {}
+
+    def get(self, request):
+        """
+        Handle GET request to return all movies with detailed information.
+        """
+        # Fetch all movies from the Movie model
+        movies = Movie.objects.all()
+
+        # Fetch TMDb genre mapping
+        genre_mapping = self.get_tmdb_genres()
+
+        # Enrich the movie data with additional details
+        enriched_movies = []
+        for movie in movies:
+            # Fetch additional details from TMDb
+            movie_data = self.get_movie_details(movie.tmdb_id)
+            if "error" in movie_data:
+                continue  # Skip this movie if details cannot be fetched
+
+            # Format the movie data
+            enriched_movies.append({
+                "id": movie.tmdb_id,
+                "title": movie_data.get("title", "N/A"),
+                "release_date": movie_data.get("release_date", "N/A"),
+                "rating": movie_data.get("vote_average", "N/A"),
+                "plot": movie_data.get("overview", "N/A"),
+                "genres": [genre_mapping.get(gid, "Unknown") for gid in movie_data.get("genre_ids", [])],
+                "poster_url": f"https://image.tmdb.org/t/p/w500{movie_data.get('poster_path')}" if movie_data.get("poster_path") else None,
+                "language": movie_data.get("original_language", "N/A"),
+                "popularity": movie_data.get("popularity", "N/A"),
+                "vote_count": movie_data.get("vote_count", "N/A"),
+                "runtime": movie_data.get("runtime", "N/A"),
+                "tagline": movie_data.get("tagline", "N/A"),
+                "budget": movie_data.get("budget", "N/A"),
+                "revenue": movie_data.get("revenue", "N/A"),
+            })
+
+        return Response({
+            "movies": enriched_movies,
+            "total_movies": len(enriched_movies),
+        }, status=status.HTTP_200_OK)
+
+    def get_movie_details(self, movie_id):
+        """Fetch movie details from TMDb."""
+        url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={settings.TMDB_API_KEY}&language=en-US"
+        try:
+            response = requests.get(url, timeout=15)
+            response.raise_for_status()
+            return response.json()
+        except requests.RequestException as e:
+            return {"error": str(e)}
+
 class RatingView(generics.CreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
     """
     API view to allow users to add, update, or delete their rating and review for a movie.

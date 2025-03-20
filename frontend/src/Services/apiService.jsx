@@ -59,7 +59,7 @@ export const logout = () => {
 // Movies
 export const getMovies = async (page = 1, query = "", genre = "") => {
   return handleResponse(
-    apiClient.get("/api/movies/movies", {
+    apiClient.get("/api/movies/movies/", {
       params: {
         page,
         query: query !== "" ? query : null,
@@ -98,9 +98,18 @@ export const getWatchlist = async () => {
 };
 
 export const getTotalMoviesCount = async () => {
-  return handleResponse(apiClient.get("/api/total-movies/"));
+  return handleResponse(apiClient.get("/api/movies/total-movies/",
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    } 
+  ));
 };
-
+// Fetch all movies with detailed information
+export const getAllMovies = async () => {
+  return handleResponse(apiClient.get("/api/movies/all-movies/"));
+};
 // Ratings
 export const addRating = async (movieId, rating, review) => {
   return handleResponse(
