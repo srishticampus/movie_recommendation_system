@@ -6,6 +6,7 @@ import Star from "../../assets/default-movie-1.jpg";
 import UserNavbar from "./Usernavbar";
 import Form from "react-bootstrap/Form";
 import "../Admin/AdminviewMovie.css";
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
 
 function UserViewAllMovieList() {
   const [movies, setMovies] = useState([]);
@@ -50,7 +51,8 @@ function UserViewAllMovieList() {
   };
 
   // Handle adding a movie to the watchlist
-  const handleAddToWatchlist = async (movieId) => {
+  const handleAddToWatchlist = async (movieId, event) => {
+    event.stopPropagation(); // Prevent the click event from bubbling up to the card
     try {
       await addToWatchList(movieId);
       alert("Movie added to watchlist!");
@@ -132,40 +134,47 @@ function UserViewAllMovieList() {
           )}
           {movies.map((movie) => (
             <div key={movie.id} className="col-md-4 mb-4">
+              {/* Card with Link for navigation */}
               <Card className="separatemoviecard">
-                <Card.Img
-                  style={{ width: "100%" }}
-                  variant="top"
-                  src={movie.poster_url || Star} // Use fallback image if poster_url is missing
-                  className="p-2"
-                />
-                <Card.Body className="p-2 text-center">
-                  <Card.Title>{movie.title}</Card.Title>
-                  <div className="row">
-                    <div className="col-7">
-                      Genres: {movie.genres.join(", ")}
+                <Link
+                  to={`/user-view-movie-details/${movie.id}`} // Pass movieId as a URL parameter
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <Card.Img
+                    style={{ width: "100%" }}
+                    variant="top"
+                    src={movie.poster_url || Star} // Use fallback image if poster_url is missing
+                    className="p-2"
+                  />
+                  <Card.Body className="p-2 text-center">
+                    <Card.Title>{movie.title}</Card.Title>
+                    <div className="row">
+                      <div className="col-7">
+                        Genres: {movie.genres.join(", ")}
+                      </div>
+                      <div className="col-5">
+                        <img
+                          src={Star}
+                          alt="Star"
+                          style={{ width: "20px", height: "20px" }}
+                        />
+                        <small>{movie.rating}/10</small>
+                      </div>
                     </div>
-                    <div className="col-5">
-                      <img
-                        src={Star}
-                        alt="Star"
-                        style={{ width: "20px", height: "20px" }}
-                      />
-                      <small>{movie.rating}/10</small>
+                    <div className="mt-2">
+                      Language: <strong>{movie.language}</strong>
                     </div>
-                  </div>
-                  <div className="mt-2">
-                    Language: <strong>{movie.language}</strong>
-                  </div>
-                  {/* Button to add to watchlist */}
+                  </Card.Body>
+                </Link>
+                {/* Button to add to watchlist */}
+                <div className="text-center my-2">
                   <Button
                     variant="danger"
-                    className="d-flex align-items-center justify-content-center mx-auto mt-2"
-                    onClick={() => handleAddToWatchlist(movie.id)}
+                    onClick={(e) => handleAddToWatchlist(movie.id, e)} // Pass event to stop propagation
                   >
                     Add to Watchlist
                   </Button>
-                </Card.Body>
+                </div>
               </Card>
             </div>
           ))}

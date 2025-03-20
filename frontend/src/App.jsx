@@ -59,7 +59,7 @@ function App() {
         <Route path="/user-view-all-movie" element={<UserViewAllMovieList/>}/>
         <Route path="/user-view-watched-movie" element={<UserViewWatchedMovie/>}/>
         <Route path="/user-saved-movies" element={<SavedMoviesList/>}/>
-        <Route path="/user" element={<UserViewMovieDetails/>}/>
+        <Route path="/user-view-movie-details/:movieId" element={<UserViewMovieDetails/>}/>
 
       </Routes>
     </>
