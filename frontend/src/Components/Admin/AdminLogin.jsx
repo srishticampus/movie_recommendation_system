@@ -71,7 +71,7 @@ function AdminLogin() {
         <div className="row">
           <div className="col-lg-4 col-md-6 col-sm-12 loginbanner_right_box">
             <div className="user_reg_container">
-              <p className="UserLoginHead">LogIn!</p>
+              <p className="UserLoginHead">Admin LogIn!</p>
               <form onSubmit={onSubmit}>
                 <label>Email ID</label>
                 <input
@@ -112,7 +112,7 @@ function AdminLogin() {
           </div>
           <div className="col-lg-4 col-md-6 col-sm-12 loginbanner_left_box"></div>
           <div className="col-lg-4 col-md-6 col-sm-12 loginbanner_left_box">
-            <h1>WELCOME to MAXMUS</h1>
+            <h1>WELCOME to Movietox</h1>
           </div>
         </div>
       </div>

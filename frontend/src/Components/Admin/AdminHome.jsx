@@ -9,66 +9,63 @@ import Card from "react-bootstrap/Card";
 import Star from "../../assets/Star.png";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import { Link } from "react-router-dom"; // Import Link
 import {
   getTotalMoviesCount,
   getTotalUsers,
   getMovies,
-  getAllMovies, // Import the new API function
-} from "../../Services/apiService"; // Import API functions
+  getAllMovies,
+} from "../../Services/apiService";
 
 function AdminHome() {
-  const [totalMovies, setTotalMovies] = useState(0); // State for total movies
-  const [totalUsers, setTotalUsers] = useState(0); // State for total users
-  const [trendingMovies, setTrendingMovies] = useState([]); // State for trending movies
-  const [newlyAddedMovies, setNewlyAddedMovies] = useState([]); // State for newly added movies
-  const [loading, setLoading] = useState(true); // State for loading indicator
-  const [error, setError] = useState(null); // State for error handling
+  const [totalMovies, setTotalMovies] = useState(0);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [trendingMovies, setTrendingMovies] = useState([]);
+  const [newlyAddedMovies, setNewlyAddedMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const maxValue = 2000; // Maximum value for the progress bar
-  const circleSize = 200; // Size of the circle
-  const radius = circleSize / 2; // Radius of the circle
-  const circumference = 2 * Math.PI * radius; // Circumference of the circle
+  const maxValue = 2000;
+  const circleSize = 200;
+  const radius = circleSize / 2;
+  const circumference = 2 * Math.PI * radius;
 
-  // Fetch total movies, total users, trending movies, and newly added movies on component mount
+  // Fetch data on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch total movies
         const moviesResponse = await getTotalMoviesCount();
         if (moviesResponse.success) {
-          setTotalMovies(moviesResponse.data.total_movies); // Update state with total movies
+          setTotalMovies(moviesResponse.data.total_movies);
         } else {
           throw new Error("Failed to fetch total movies.");
         }
 
-        // Fetch total users
         const usersResponse = await getTotalUsers();
         if (usersResponse.success) {
-          setTotalUsers(usersResponse.data.total_users); // Update state with total users
+          setTotalUsers(usersResponse.data.total_users);
         } else {
           throw new Error("Failed to fetch total users.");
         }
 
-        // Fetch trending movies
-        const trendingMoviesResponse = await getMovies(1, "", ""); // Fetch movies (page 1, no query, no genre filter)
+        const trendingMoviesResponse = await getMovies(1, "", "");
         if (trendingMoviesResponse.success) {
-          setTrendingMovies(trendingMoviesResponse.data.movies); // Update state with trending movies
+          setTrendingMovies(trendingMoviesResponse.data.movies);
         } else {
           throw new Error("Failed to fetch trending movies.");
         }
 
-        // Fetch newly added movies
-        const newlyAddedMoviesResponse = await getAllMovies(); // Fetch all movies from the Movie model
+        const newlyAddedMoviesResponse = await getAllMovies();
         if (newlyAddedMoviesResponse.success) {
-          setNewlyAddedMovies(newlyAddedMoviesResponse.data.movies); // Update state with newly added movies
+          setNewlyAddedMovies(newlyAddedMoviesResponse.data.movies);
         } else {
           throw new Error("Failed to fetch newly added movies.");
         }
       } catch (error) {
-        setError(error.message); // Set error message
+        setError(error.message);
         toast.error("Failed to fetch movie data.");
       } finally {
-        setLoading(false); // Set loading to false
+        setLoading(false);
       }
     };
 
@@ -171,29 +168,34 @@ function AdminHome() {
           ) : (
             trendingMovies.map((movie) => (
               <div key={movie.id} className="col-md-4 mb-4">
-                <Card className="separatemoviecard">
-                  <Card.Img variant="top" src={movie.poster_url || Star} />{" "}
-                  {/* Use movie poster or fallback image */}
-                  <Card.Body>
-                    <Card.Title>{movie.title}</Card.Title>
-                    <div className="row">
-                      <div className="col-7">
-                        Genres: {movie.genres.join(", ")}
+                {/* Wrap the card content in a Link */}
+                <Link
+                  to={`/admin-viewmovieDetails/${movie.id}`} // Pass movieId as a URL parameter
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <Card className="separatemoviecard">
+                    <Card.Img variant="top" src={movie.poster_url || Star} />
+                    <Card.Body>
+                      <Card.Title>{movie.title}</Card.Title>
+                      <div className="row">
+                        <div className="col-7">
+                          Genres: {movie.genres.join(", ")}
+                        </div>
+                        <div className="col-5">
+                          <img
+                            src={Star}
+                            alt="Star"
+                            style={{ width: "20px", height: "20px" }}
+                          />
+                          <small>{movie.rating}/10</small>
+                        </div>
                       </div>
-                      <div className="col-5">
-                        <img
-                          src={Star}
-                          alt="Star"
-                          style={{ width: "20px", height: "20px" }}
-                        />
-                        <small>{movie.rating}/10</small>
+                      <div className="mt-2 text-secondary">
+                        <small>{movie.runtime || "N/A"}</small>
                       </div>
-                    </div>
-                    <div className="mt-2 text-secondary">
-                      <small>{movie.runtime || "N/A"}</small>
-                    </div>
-                  </Card.Body>
-                </Card>
+                    </Card.Body>
+                  </Card>
+                </Link>
               </div>
             ))
           )}
@@ -213,29 +215,34 @@ function AdminHome() {
           ) : (
             newlyAddedMovies.map((movie) => (
               <div key={movie.id} className="col-md-4 mb-4">
-                <Card className="separatemoviecard">
-                  <Card.Img variant="top" src={movie.poster_url || Star} />{" "}
-                  {/* Use movie poster or fallback image */}
-                  <Card.Body>
-                    <Card.Title>{movie.title}</Card.Title>
-                    <div className="row">
-                      <div className="col-7">
-                        Genres: {movie.genres?.join(", ") || "N/A"}
+                {/* Wrap the card content in a Link */}
+                <Link
+                  to={`/admin-viewmovieDetails/${movie.id}`} // Pass movieId as a URL parameter
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <Card className="separatemoviecard">
+                    <Card.Img variant="top" src={movie.poster_url || Star} />
+                    <Card.Body>
+                      <Card.Title>{movie.title}</Card.Title>
+                      <div className="row">
+                        <div className="col-7">
+                          Genres: {movie.genres?.join(", ") || "N/A"}
+                        </div>
+                        <div className="col-5">
+                          <img
+                            src={Star}
+                            alt="Star"
+                            style={{ width: "20px", height: "20px" }}
+                          />
+                          <small>{movie.rating}/10</small>
+                        </div>
                       </div>
-                      <div className="col-5">
-                        <img
-                          src={Star}
-                          alt="Star"
-                          style={{ width: "20px", height: "20px" }}
-                        />
-                        <small>{movie.rating}/10</small>
+                      <div className="mt-2 text-secondary">
+                        <small>{movie.runtime || "N/A"}</small>
                       </div>
-                    </div>
-                    <div className="mt-2 text-secondary">
-                      <small>{movie.runtime || "N/A"}</small>
-                    </div>
-                  </Card.Body>
-                </Card>
+                    </Card.Body>
+                  </Card>
+                </Link>
               </div>
             ))
           )}
