@@ -1,4 +1,3 @@
-//Services/apiService.jsx
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -28,6 +27,7 @@ const handleResponse = async (apiCall) => {
   }
 };
 
+// User Authentication
 export const userSignup = async (data) => {
   return handleResponse(
     apiClient.post("/api/register/", data, { authRequired: false })
@@ -35,20 +35,14 @@ export const userSignup = async (data) => {
 };
 
 export const login = async (data) => {
-  // console.log("🔵 Attempting login...");
   const response = await handleResponse(apiClient.post("/api/login/", data));
   if (response.success == true) {
-    // console.log("✅ Login successful. Storing tokens...");
-    console.log(response);
-    toast.success(" Login successful");
+    toast.success("Login successful");
     localStorage.setItem("accessToken", response.data.data.access);
     localStorage.setItem("refreshToken", response.data.data.refresh);
-    // localStorage.setItem("userId",)
-    console.log("accessToken", response.data.access);
     window.dispatchEvent(new Event("loginStatusChanged"));
   } else {
-    console.log(response);
-    toast.error(" Login Failed");
+    toast.error("Login Failed");
   }
   return response;
 };
@@ -61,6 +55,7 @@ export const logout = () => {
   window.dispatchEvent(new Event("loginStatusChanged"));
 };
 
+// Movies
 export const getMovies = async (page = 1, query = "", genre = "") => {
   return handleResponse(
     apiClient.get("/api/movies/movies", {
@@ -81,9 +76,7 @@ export const addToWatchList = async (movieId) => {
   return handleResponse(
     apiClient.post(
       `/api/movies/add-to-watchlist/`,
-      {
-        movie_id: movieId,
-      },
+      { movie_id: movieId },
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -93,41 +86,8 @@ export const addToWatchList = async (movieId) => {
   );
 };
 
-const generateConfig = (isFormData = false, authRequired = true) => ({
-  headers: {
-    "Content-Type": isFormData ? "multipart/form-data" : "application/json",
-  },
-  authRequired,
-});
-
-export const movieList = async () => {
-  return handleResponse(apiClient.get("/api/movies/movies/", generateConfig()));
-};
-
-export const getWatchedMovies = async () => {
-  return handleResponse(apiClient.get("/api/movies/watched/", generateConfig()));
-};
-
-export const getMoviesByGenre = async (genre) => {
-  return handleResponse(
-    apiClient.get(`/api/movies/movies/?genre=${genre}`, generateConfig())
-  );
-};
-
-export const getMovieById = async (movieId) => {
-  return handleResponse(
-    apiClient.get(`/api/movies/movies/${movieId}/`, generateConfig())
-  );
-};
-
-export const addToWatchlist = async (movieId) => {
-  return handleResponse(
-    apiClient.post(
-      "/api/movies/add-to-watchlist/",
-      { movie_id: movieId },
-      generateConfig()
-    )
-  );
+export const getTotalMoviesCount = async () => {
+  return handleResponse(apiClient.get("/api/total-movies/"));
 };
 
 // Ratings
@@ -223,5 +183,44 @@ export const getUsersByWeek = async (year, month) => {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
     })
+  );
+};
+
+// Admin/User Management
+export const getAllUsers = async () => {
+  return handleResponse(
+    apiClient.get("/api/admin/users/", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
+  );
+};
+
+export const activateUser = async (userId) => {
+  return handleResponse(
+    apiClient.post(
+      `/api/admin/users/${userId}/activate_user/`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
+    )
+  );
+};
+
+export const deactivateUser = async (userId) => {
+  return handleResponse(
+    apiClient.post(
+      `/api/admin/users/${userId}/deactivate_user/`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
+    )
   );
 };
