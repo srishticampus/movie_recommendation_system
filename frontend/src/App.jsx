@@ -56,6 +56,11 @@ function App() {
         <Route path="/admin-viewmovies" element={<Adminviewmovies />} />
         <Route path="/admin-contact" element={<AdminContact />} />
         <Route path="/admin-viewmovieDetails" element={<MovieDetailedPage />} />
+        <Route path="/user-view-all-movie" element={<UseViewAllMovieList/>}/>
+        <Route path="/user-view-watched-movie" element={<UserViewWatchedMovie/>}/>
+        <Route path="/user-saved-movies" element={<SavedMoviesList/>}/>
+        <Route path="/user" element={<UserViewMovieDetails/>}/>
+
       </Routes>
     </>
   );

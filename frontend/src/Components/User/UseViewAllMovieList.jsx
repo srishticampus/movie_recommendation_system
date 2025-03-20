@@ -7,7 +7,6 @@ import UserNavbar from "./Usernavbar";
 
 function UseViewAllMovieList() {
   const [movies, setMovies] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Filters
@@ -20,19 +19,16 @@ function UseViewAllMovieList() {
   }, []);
 
   const fetchMovies = async () => {
-    setLoading(true);
     const response = await movieList();
     if (response.success) {
       setMovies(response.data.movies);
     } else {
       setError("Failed to load movies.");
     }
-    setLoading(false);
   };
 
   // Handle filtering
   const handleFilter = async () => {
-    setLoading(true);
     let filteredMovies = [];
 
     if (selectedGenre) {
@@ -54,7 +50,6 @@ function UseViewAllMovieList() {
     }
 
     setMovies(filteredMovies);
-    setLoading(false);
   };
 
   return (
@@ -113,9 +108,9 @@ function UseViewAllMovieList() {
 
         {/* Movies List */}
         <div className="row mt-4">
-          {loading && <p className="text-center">Loading movies...</p>}
+          { <p className="text-center">Loading movies...</p>}
           {error && <p className="text-center text-danger">{error}</p>}
-          {movies.length === 0 && !loading && <p className="text-center">No movies found.</p>}
+          {movies.length === 0 && <p className="text-center">No movies found.</p>}
 
           {movies.map((movie) => (
             <div key={movie.id} className="col-md-4 mb-4">
