@@ -1,3 +1,4 @@
+//Services/apiService.jsx
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -27,6 +28,7 @@ const handleResponse = async (apiCall) => {
   }
 };
 
+// User Authentication
 export const userSignup = async (data) => {
   return handleResponse(
     apiClient.post("/api/register/", data, { authRequired: false })
@@ -34,20 +36,14 @@ export const userSignup = async (data) => {
 };
 
 export const login = async (data) => {
-  // console.log("🔵 Attempting login...");
   const response = await handleResponse(apiClient.post("/api/login/", data));
   if (response.success == true) {
-    // console.log("✅ Login successful. Storing tokens...");
-    console.log(response);
-    toast.success(" Login successful");
+    toast.success("Login successful");
     localStorage.setItem("accessToken", response.data.data.access);
     localStorage.setItem("refreshToken", response.data.data.refresh);
-    // localStorage.setItem("userId",)
-    console.log("accessToken", response.data.access);
     window.dispatchEvent(new Event("loginStatusChanged"));
   } else {
-    console.log(response);
-    toast.error(" Login Failed");
+    toast.error("Login Failed");
   }
   return response;
 };
@@ -60,6 +56,7 @@ export const logout = () => {
   window.dispatchEvent(new Event("loginStatusChanged"));
 };
 
+// Movies
 export const getMovies = async (page = 1, query = "", genre = "") => {
   return handleResponse(
     apiClient.get("/api/movies/movies", {
@@ -80,9 +77,7 @@ export const addToWatchList = async (movieId) => {
   return handleResponse(
     apiClient.post(
       `/api/movies/add-to-watchlist/`,
-      {
-        movie_id: movieId,
-      },
+      { movie_id: movieId },
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -92,39 +87,98 @@ export const addToWatchList = async (movieId) => {
   );
 };
 
-const generateConfig = (isFormData = false, authRequired = true) => ({
-  headers: {
-    "Content-Type": isFormData ? "multipart/form-data" : "application/json",
-  },
-  authRequired,
-});
-
-export const movieList = async () => {
-  return handleResponse(apiClient.get("/api/movies/movies/", generateConfig()));
-};
-
-export const getWatchedMovies = async () => {
-  return handleResponse(apiClient.get("/api/movies/watched/", generateConfig()));
-};
-
-export const getMoviesByGenre = async (genre) => {
-  return handleResponse(
-    apiClient.get(`/api/movies/movies/?genre=${genre}`, generateConfig())
-  );
-};
-
-export const getMovieById = async (movieId) => {
-  return handleResponse(
-    apiClient.get(`/api/movies/movies/${movieId}/`, generateConfig())
-  );
-};
-
-export const addToWatchlist = async (movieId) => {
+// Ratings
+export const addRating = async (movieId, rating, review) => {
   return handleResponse(
     apiClient.post(
-      "/api/movies/add-to-watchlist/",
-      { movie_id: movieId },
-      generateConfig()
+      "/api/movies/ratings/",
+      { movie: movieId, rating, review },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
     )
+  );
+};
+
+export const updateRating = async (ratingId, data) => {
+  return handleResponse(
+    apiClient.put(
+      `/api/movies/ratings/${ratingId}/`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
+    )
+  );
+};
+
+export const getMyRatingForMovie = async (movieId) => {
+  return handleResponse(
+    apiClient.get(`/api/movies/movies/${movieId}/my-rating/`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
+  );
+};
+
+export const getRatingsForMovie = async (movieId) => {
+  return handleResponse(apiClient.get(`/api/movies/movies/${movieId}/ratings/`));
+};
+
+// Recommendations
+export const getRecommendations = async () => {
+  return handleResponse(
+    apiClient.get("/api/movies/recommendations/", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
+  );
+};
+
+// Profiles
+export const getUserProfile = async () => {
+  return handleResponse(
+    apiClient.get("/api/profiles/me/", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
+  );
+};
+
+export const updateUserProfile = async (data) => {
+  return handleResponse(
+    apiClient.put("/api/profiles/update_me/", data, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
+  );
+};
+
+// Admin/Stats
+export const getTotalUsers = async () => {
+  return handleResponse(
+    apiClient.get("/api/total-users/", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
+  );
+};
+
+export const getUsersByWeek = async (year, month) => {
+  return handleResponse(
+    apiClient.get(`/api/users-by-week/${year}/${month}/`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
   );
 };
