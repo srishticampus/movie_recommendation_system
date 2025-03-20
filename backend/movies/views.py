@@ -2,65 +2,73 @@
 """
 This module contains views and endpoints for the Movie Recommendation System.
 
-It defines the API views for getting movies  and other
-related features, using Django REST Framework.
+It defines the API views for getting movies and other related features, using Django REST Framework.
 """
 import requests
 from django.conf import settings
-from rest_framework import permissions,generics
+from rest_framework import permissions, generics
 from rest_framework.exceptions import ValidationError, NotFound
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import status
-from .models import Rating, Movie,MovieWatchList
-from .serializers import RatingSerializer,MovieSerializer
+from django.core.cache import cache
+from .models import Rating, Movie, MovieWatchList
+from .serializers import RatingSerializer, MovieSerializer
 from .recommendation_service import RecommendationService
-# Create your views here.
+
 
 class MovieListView(APIView):
-    """
-    API to fetch movies from TMDb with genre names, filtering, search, and pagination.
-    """
     TIMEOUT = 15
     permission_classes = [permissions.AllowAny]
 
     def get_tmdb_genres(self):
-        """Fetch genre list from TMDb"""
-        url = f"https://api.themoviedb.org/3/genre/movie/list?api_key={settings.TMDB_API_KEY}&language=en-US"
-        try:
-            response = requests.get(url, timeout=self.TIMEOUT)
-            response.raise_for_status()
-            genres = response.json().get("genres", [])
-            return {genre["id"]: genre["name"] for genre in genres}  # Map genre ID to name
-        except (requests.RequestException, requests.Timeout):
-            return {}
+        """Fetch genre list from TMDb with caching."""
+        cache_key = "tmdb_genre_list"
+        genres = cache.get(cache_key)
+
+        if not genres:
+            url = f"https://api.themoviedb.org/3/genre/movie/list?api_key={settings.TMDB_API_KEY}&language=en-US"
+            try:
+                response = requests.get(url, timeout=self.TIMEOUT)
+                response.raise_for_status()
+                genres = response.json().get("genres", [])
+                cache.set(cache_key, genres, timeout=2000)  # Cache for 10 minutes
+            except (requests.RequestException, requests.Timeout):
+                genres = []
+        return {genre["id"]: genre["name"] for genre in genres}
 
     def get_tmdb_movies(self, page=1, genre_id=None, query=None):
         """
-        Fetch a paginated list of movies from TMDb with optional genre filtering and search.
+        Fetch a paginated list of movies from TMDb with caching.
         """
-        base_url = "https://api.themoviedb.org/3/"
-        if query:
-            url = f"{base_url}search/movie?api_key={settings.TMDB_API_KEY}&language=en-US&query={query}&page={page}"
-        else:
-            url = f"{base_url}discover/movie?api_key={settings.TMDB_API_KEY}&language=en-US&page={page}"
-            if genre_id:
-                url += f"&with_genres={genre_id}"
+        cache_key = f"tmdb_movies_page_{page}_genre_{genre_id}_query_{query}"
+        movies = cache.get(cache_key)
 
-        try:
-            response = requests.get(url, timeout=self.TIMEOUT)
-            response.raise_for_status()
-            return response.json()
-        except requests.RequestException as e:
-            return {"results": [], "total_pages": 1, "error": str(e)}
+        if not movies:
+            base_url = "https://api.themoviedb.org/3/"
+            if query:
+                url = f"{base_url}search/movie?api_key={settings.TMDB_API_KEY}&language=en-US&query={query}&page={page}"
+            else:
+                url = f"{base_url}discover/movie?api_key={settings.TMDB_API_KEY}&language=en-US&page={page}"
+                if genre_id:
+                    url += f"&with_genres={genre_id}"
+
+            try:
+                response = requests.get(url, timeout=self.TIMEOUT)
+                response.raise_for_status()
+                movies = response.json()
+                cache.set(cache_key, movies, timeout=2000)  # Cache for 10 minutes
+            except requests.RequestException as e:
+                movies = {"results": [], "total_pages": 1, "error": str(e)}
+        return movies
 
     def get(self, request):
-        """Handle GET request to return movies with filtering, search, and pagination"""
+        """Handle GET request with caching."""
         page = request.GET.get("page", 1)
-        query = request.GET.get("query")  # Search query
-        genre_name = request.GET.get("genre")  # Genre filter (name, not ID)
-        
+        query = request.GET.get("query")
+        genre_name = request.GET.get("genre")
+
         try:
             page = int(page)
             if page < 1:
@@ -109,18 +117,23 @@ class MovieDetailView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get_movie_details(self, movie_id):
-        """Fetch movie details from TMDb."""
-        url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={settings.TMDB_API_KEY}&language=en-US"
+        """Fetch movie details from TMDb with caching."""
+        cache_key = f"tmdb_movie_details_{movie_id}"
+        movie_data = cache.get(cache_key)
 
-        try:
-            response = requests.get(url, timeout=self.TIMEOUT)
-            response.raise_for_status()
-            return response.json()
-        except requests.RequestException as e:
-            return {"error": str(e)}
+        if not movie_data:
+            url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={settings.TMDB_API_KEY}&language=en-US"
+            try:
+                response = requests.get(url, timeout=self.TIMEOUT)
+                response.raise_for_status()
+                movie_data = response.json()
+                cache.set(cache_key, movie_data, timeout=2000)  # Cache for 10 minutes
+            except requests.RequestException as e:
+                movie_data = {"error": str(e)}
+        return movie_data
 
     def get(self, request, movie_id):
-        """Handle GET request to fetch detailed movie information"""
+        """Handle GET request to fetch detailed movie information."""
         if not movie_id.isdigit():
             return Response({"error": "Invalid movie ID format"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -148,6 +161,7 @@ class MovieDetailView(APIView):
 
         return Response(movie_detail, status=status.HTTP_200_OK)
 
+
 class AddMovieToWatchlistView(APIView):
     """
     API to add a movie to a user's watchlist.
@@ -155,15 +169,20 @@ class AddMovieToWatchlistView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_movie_details(self, movie_id):
-        """Fetch movie details from TMDb."""
-        url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={settings.TMDB_API_KEY}&language=en-US"
+        """Fetch movie details from TMDb with caching."""
+        cache_key = f"tmdb_movie_details_{movie_id}"
+        movie_data = cache.get(cache_key)
 
-        try:
-            response = requests.get(url, timeout=15)
-            response.raise_for_status()
-            return response.json()
-        except requests.RequestException as e:
-            return {"error": str(e)}
+        if not movie_data:
+            url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={settings.TMDB_API_KEY}&language=en-US"
+            try:
+                response = requests.get(url, timeout=15)
+                response.raise_for_status()
+                movie_data = response.json()
+                cache.set(cache_key, movie_data, timeout=2000)  # Cache for 10 minutes
+            except requests.RequestException as e:
+                movie_data = {"error": str(e)}
+        return movie_data
 
     def post(self, request):
         """Handle POST request to add a movie to the user's watchlist."""
@@ -207,49 +226,130 @@ class AddMovieToWatchlistView(APIView):
             }
         }, status=status.HTTP_201_CREATED)
 
-class WatchlistView(generics.ListAPIView):
+class WatchlistView(APIView):
     """
-    API to fetch the movies in the current user's watchlist.
+    API to fetch the movies in the current user's watchlist with pagination and genre filtering.
     """
-    serializer_class = MovieSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
+    def get_tmdb_genres(self):
+        """Fetch genre list from TMDb with caching."""
+        cache_key = "tmdb_genre_list"
+        genres = cache.get(cache_key)
+
+        if not genres:
+            url = f"https://api.themoviedb.org/3/genre/movie/list?api_key={settings.TMDB_API_KEY}&language=en-US"
+            try:
+                response = requests.get(url, timeout=15)
+                response.raise_for_status()
+                genres = response.json().get("genres", [])
+                cache.set(cache_key, genres, timeout=2000)  # Cache for 10 minutes
+            except (requests.RequestException, requests.Timeout):
+                genres = []
+        return {genre["id"]: genre["name"] for genre in genres}
+
+    def get_movie_details(self, movie_id):
+        """Fetch movie details from TMDb with caching."""
+        cache_key = f"tmdb_movie_details_{movie_id}"
+        movie_data = cache.get(cache_key)
+
+        if not movie_data:
+            url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={settings.TMDB_API_KEY}&language=en-US"
+            try:
+                response = requests.get(url, timeout=15)
+                response.raise_for_status()
+                movie_data = response.json()
+                cache.set(cache_key, movie_data, timeout=2000)  # Cache for 10 minutes
+            except requests.RequestException as e:
+                movie_data = {"error": str(e)}
+        return movie_data
+
+    def get(self, request):
         """
-        Return the movies in the current user's watchlist.
+        Handle GET request to fetch the user's watchlist with pagination and genre filtering.
         """
-        user = self.request.user
+        user = request.user
+        cache_key = f"user_{user.id}_watchlist_movies"
+        cached_movies = cache.get(cache_key)
+
+        # Pagination
+        paginator = PageNumberPagination()
+        paginator.page_size = 20  # Number of movies per page
+
+        # Genre filter
+        selected_genre = request.query_params.get("genre", "")
+
+        if cached_movies:
+            # Apply genre filtering to cached movies
+            if selected_genre:
+                cached_movies = [
+                    movie for movie in cached_movies
+                    if selected_genre.lower() in [g.lower() for g in movie.get("genres", [])]
+                ]
+            # Paginate the cached movies
+            paginated_movies = paginator.paginate_queryset(cached_movies, request)
+            return paginator.get_paginated_response({
+                "movies": paginated_movies,
+                "total_movies": len(cached_movies),
+            })
+
         # Fetch the movies in the user's watchlist
-        watchlist_movies = MovieWatchList.objects.filter(user=user).values_list('movie', flat=True)
-        # Fetch the Movie objects for the movies in the watchlist
-        movies = Movie.objects.filter(id__in=watchlist_movies)
+        watchlist_movies = MovieWatchList.objects.filter(user=user).values_list('movie__tmdb_id', flat=True)
 
-        # Check if any movies in the watchlist no longer exist in the database
-        if len(watchlist_movies) != movies.count():
-            raise ValidationError({"detail": "Some movies in your watchlist no longer exist in the database."})
+        # Check if the watchlist is empty
+        if not watchlist_movies:
+            return Response(
+                {"detail": "Your watchlist is empty. Add movies to your watchlist to see them here."},
+                status=status.HTTP_204_NO_CONTENT
+            )
 
-        return movies
+        # Fetch TMDb genre mapping
+        genre_mapping = self.get_tmdb_genres()
 
-    def list(self, request, *args, **kwargs):
-        """
-        Override the list method to handle custom responses.
-        """
-        try:
-            queryset = self.get_queryset()
+        # Enrich the movie data with additional details
+        enriched_movies = []
+        for movie_id in watchlist_movies:
+            # Fetch additional details from TMDb
+            movie_data = self.get_movie_details(movie_id)
+            if "error" in movie_data:
+                continue  # Skip this movie if details cannot be fetched
 
-            # Check if the watchlist is empty
-            if not queryset.exists():
-                return Response(
-                    {"detail": "Your watchlist is empty. Add movies to your watchlist to see them here."},
-                    status=status.HTTP_204_NO_CONTENT
-                )
+            # Extract genres from the movie details
+            genres = []
+            if "genres" in movie_data:
+                # If the 'genres' field is present, use it
+                genres = [genre["name"] for genre in movie_data.get("genres", [])]
+            elif "genre_ids" in movie_data:
+                # If 'genre_ids' is present, map them to genre names
+                genres = [genre_mapping.get(gid, "Unknown") for gid in movie_data.get("genre_ids", [])]
 
-            # Serialize the movies in the watchlist
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            # Apply genre filtering
+            if selected_genre and selected_genre.lower() not in [g.lower() for g in genres]:
+                continue  # Skip this movie if it doesn't match the selected genre
 
-        except ValidationError as e:
-            return Response(e.detail, status=status.HTTP_404_NOT_FOUND)
+            # Format the movie data
+            enriched_movies.append({
+                "id": movie_data["id"],
+                "title": movie_data.get("title", "N/A"),
+                "release_date": movie_data.get("release_date", "N/A"),
+                "rating": movie_data.get("vote_average", "N/A"),
+                "plot": movie_data.get("overview", "N/A"),
+                "genres": genres,
+                "poster_url": f"https://image.tmdb.org/t/p/w500{movie_data.get('poster_path')}" if movie_data.get("poster_path") else None,
+                "language": movie_data.get("original_language", "N/A"),
+                "popularity": movie_data.get("popularity", "N/A"),
+                "vote_count": movie_data.get("vote_count", "N/A"),
+            })
+
+        # Cache the enriched movies for 10 minutes
+        cache.set(cache_key, enriched_movies, timeout=600)
+
+        # Paginate the enriched movies
+        paginated_movies = paginator.paginate_queryset(enriched_movies, request)
+        return paginator.get_paginated_response({
+            "movies": paginated_movies,
+            "total_movies": len(enriched_movies),
+        })
 
 class AllMoviesView(APIView):
     """
@@ -258,51 +358,63 @@ class AllMoviesView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get_tmdb_genres(self):
-        """Fetch genre list from TMDb"""
-        url = f"https://api.themoviedb.org/3/genre/movie/list?api_key={settings.TMDB_API_KEY}&language=en-US"
-        try:
-            response = requests.get(url, timeout=15)
-            response.raise_for_status()
-            genres = response.json().get("genres", [])
-            return {genre["id"]: genre["name"] for genre in genres}  # Map genre ID to name
-        except (requests.RequestException, requests.Timeout):
-            return {}
+        """Fetch genre list from TMDb with caching."""
+        cache_key = "tmdb_genre_list"
+        genres = cache.get(cache_key)
+
+        if not genres:
+            url = f"https://api.themoviedb.org/3/genre/movie/list?api_key={settings.TMDB_API_KEY}&language=en-US"
+            try:
+                response = requests.get(url, timeout=15)
+                response.raise_for_status()
+                genres = response.json().get("genres", [])
+                cache.set(cache_key, genres, timeout=2000)  # Cache for 10 minutes
+            except (requests.RequestException, requests.Timeout):
+                genres = []
+        return {genre["id"]: genre["name"] for genre in genres}
 
     def get(self, request):
         """
         Handle GET request to return all movies with detailed information.
         """
-        # Fetch all movies from the Movie model
-        movies = Movie.objects.all()
+        cache_key = "all_movies_enriched"
+        enriched_movies = cache.get(cache_key)
 
-        # Fetch TMDb genre mapping
-        genre_mapping = self.get_tmdb_genres()
+        if not enriched_movies:
+            # Fetch all movies from the Movie model
+            movies = Movie.objects.all()
 
-        # Enrich the movie data with additional details
-        enriched_movies = []
-        for movie in movies:
-            # Fetch additional details from TMDb
-            movie_data = self.get_movie_details(movie.tmdb_id)
-            if "error" in movie_data:
-                continue  # Skip this movie if details cannot be fetched
+            # Fetch TMDb genre mapping
+            genre_mapping = self.get_tmdb_genres()
 
-            # Format the movie data
-            enriched_movies.append({
-                "id": movie.tmdb_id,
-                "title": movie_data.get("title", "N/A"),
-                "release_date": movie_data.get("release_date", "N/A"),
-                "rating": movie_data.get("vote_average", "N/A"),
-                "plot": movie_data.get("overview", "N/A"),
-                "genres": [genre_mapping.get(gid, "Unknown") for gid in movie_data.get("genre_ids", [])],
-                "poster_url": f"https://image.tmdb.org/t/p/w500{movie_data.get('poster_path')}" if movie_data.get("poster_path") else None,
-                "language": movie_data.get("original_language", "N/A"),
-                "popularity": movie_data.get("popularity", "N/A"),
-                "vote_count": movie_data.get("vote_count", "N/A"),
-                "runtime": movie_data.get("runtime", "N/A"),
-                "tagline": movie_data.get("tagline", "N/A"),
-                "budget": movie_data.get("budget", "N/A"),
-                "revenue": movie_data.get("revenue", "N/A"),
-            })
+            # Enrich the movie data with additional details
+            enriched_movies = []
+            for movie in movies:
+                # Fetch additional details from TMDb
+                movie_data = self.get_movie_details(movie.tmdb_id)
+                if "error" in movie_data:
+                    continue  # Skip this movie if details cannot be fetched
+
+                # Format the movie data
+                enriched_movies.append({
+                    "id": movie.tmdb_id,
+                    "title": movie_data.get("title", "N/A"),
+                    "release_date": movie_data.get("release_date", "N/A"),
+                    "rating": movie_data.get("vote_average", "N/A"),
+                    "plot": movie_data.get("overview", "N/A"),
+                    "genres": [genre_mapping.get(gid, "Unknown") for gid in movie_data.get("genre_ids", [])],
+                    "poster_url": f"https://image.tmdb.org/t/p/w500{movie_data.get('poster_path')}" if movie_data.get("poster_path") else None,
+                    "language": movie_data.get("original_language", "N/A"),
+                    "popularity": movie_data.get("popularity", "N/A"),
+                    "vote_count": movie_data.get("vote_count", "N/A"),
+                    "runtime": movie_data.get("runtime", "N/A"),
+                    "tagline": movie_data.get("tagline", "N/A"),
+                    "budget": movie_data.get("budget", "N/A"),
+                    "revenue": movie_data.get("revenue", "N/A"),
+                })
+
+            # Cache the enriched movies for 10 minutes
+            cache.set(cache_key, enriched_movies, timeout=2000)
 
         return Response({
             "movies": enriched_movies,
@@ -310,14 +422,21 @@ class AllMoviesView(APIView):
         }, status=status.HTTP_200_OK)
 
     def get_movie_details(self, movie_id):
-        """Fetch movie details from TMDb."""
-        url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={settings.TMDB_API_KEY}&language=en-US"
-        try:
-            response = requests.get(url, timeout=15)
-            response.raise_for_status()
-            return response.json()
-        except requests.RequestException as e:
-            return {"error": str(e)}
+        """Fetch movie details from TMDb with caching."""
+        cache_key = f"tmdb_movie_details_{movie_id}"
+        movie_data = cache.get(cache_key)
+
+        if not movie_data:
+            url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={settings.TMDB_API_KEY}&language=en-US"
+            try:
+                response = requests.get(url, timeout=15)
+                response.raise_for_status()
+                movie_data = response.json()
+                cache.set(cache_key, movie_data, timeout=2000)  # Cache for 10 minutes
+            except requests.RequestException as e:
+                movie_data = {"error": str(e)}
+        return movie_data
+
 
 class RatingView(generics.CreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
     """
@@ -399,6 +518,7 @@ class RatingView(generics.CreateAPIView, generics.UpdateAPIView, generics.Destro
         movie.average_rating = avg_rating
         movie.save()
 
+
 class UserRatingForMovieView(generics.RetrieveAPIView):
     """
     API to fetch the current user's rating for a specific movie.
@@ -425,6 +545,7 @@ class UserRatingForMovieView(generics.RetrieveAPIView):
 
         return rating
 
+
 class MovieRatingsView(generics.ListAPIView):
     """
     API to fetch all ratings for a specific movie.
@@ -447,6 +568,7 @@ class MovieRatingsView(generics.ListAPIView):
         # Fetch all ratings for the movie
         return Rating.objects.filter(movie=movie)
 
+
 class MovieRecommendationView(APIView):
     """
     API to fetch recommended movies based on the user's watchlist with pagination and genre filtering.
@@ -454,31 +576,42 @@ class MovieRecommendationView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_tmdb_genres(self):
-        """Fetch genre list from TMDb"""
-        url = f"https://api.themoviedb.org/3/genre/movie/list?api_key={settings.TMDB_API_KEY}&language=en-US"
-        try:
-            response = requests.get(url, timeout=15)
-            response.raise_for_status()
-            genres = response.json().get("genres", [])
-            return {genre["id"]: genre["name"] for genre in genres}  # Map genre ID to name
-        except (requests.RequestException, requests.Timeout):
-            return {}
+        """Fetch genre list from TMDb with caching."""
+        cache_key = "tmdb_genre_list"
+        genres = cache.get(cache_key)
+
+        if not genres:
+            url = f"https://api.themoviedb.org/3/genre/movie/list?api_key={settings.TMDB_API_KEY}&language=en-US"
+            try:
+                response = requests.get(url, timeout=15)
+                response.raise_for_status()
+                genres = response.json().get("genres", [])
+                cache.set(cache_key, genres, timeout=2000)  # Cache for 10 minutes
+            except (requests.RequestException, requests.Timeout):
+                genres = []
+        return {genre["id"]: genre["name"] for genre in genres}
 
     def get(self, request):
         """
-        Fetch recommended movies for the current user with pagination and genre filtering.
+        Fetch recommended movies for the current user with caching.
         """
         user = request.user
+        cache_key = f"user_{user.id}_recommendations"
+        recommended_movies = cache.get(cache_key)
 
-        # Fetch movies in the user's watchlist
-        watchlist_movies = MovieWatchList.objects.filter(user=user).values_list('movie__tmdb_id', flat=True)
+        if not recommended_movies:
+            # Fetch movies in the user's watchlist
+            watchlist_movies = MovieWatchList.objects.filter(user=user).values_list('movie__tmdb_id', flat=True)
 
-        # Get recommendations
-        recommendation_service = RecommendationService()
-        recommended_movies = recommendation_service.recommend_movies(watchlist_movies, n=100)  # Fetch more movies for pagination
+            # Get recommendations
+            recommendation_service = RecommendationService()
+            recommended_movies = recommendation_service.recommend_movies(watchlist_movies, n=100)
+
+            # Cache the recommendations for 10 minutes
+            cache.set(cache_key, recommended_movies, timeout=2000)
 
         # Apply genre filtering if a genre is provided
-        genre_name = request.GET.get("genre")  # Genre filter (name, not ID)
+        genre_name = request.GET.get("genre")
         genre_mapping = self.get_tmdb_genres()
         genre_id = next((id for id, name in genre_mapping.items() if genre_name and name.lower() == genre_name.lower()), None)
 
@@ -491,10 +624,10 @@ class MovieRecommendationView(APIView):
 
         # Paginate the results
         paginator = PageNumberPagination()
-        paginator.page_size = 20  # Number of movies per page
+        paginator.page_size = 20
         paginated_movies = paginator.paginate_queryset(recommended_movies, request)
 
-        # Format the response in the same way as MovieListView
+        # Format the response
         enriched_movies = [
             {
                 "id": movie["id"],
@@ -516,6 +649,7 @@ class MovieRecommendationView(APIView):
             "total_pages": paginator.page.paginator.num_pages,
             "current_page": paginator.page.number,
         })
+
 
 class TotalMoviesCountView(APIView):
     """

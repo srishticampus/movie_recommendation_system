@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { getMovies, addToWatchList } from "../../Services/apiService"; // Replace getRecommendations with getMovies
+import { getMovies, addToWatchList } from "../../Services/apiService";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
-import Star from "../../assets/Star.png";
+import Star from "../../assets/default-movie-1.jpg";
 import UserNavbar from "./Usernavbar";
 import Form from "react-bootstrap/Form";
 import "../Admin/AdminviewMovie.css";
@@ -13,11 +13,12 @@ function UserViewAllMovieList() {
   const [selectedGenre, setSelectedGenre] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1); // Track the current page
 
   // Fetch movies based on filters
   const fetchMovies = async () => {
     try {
-      const response = await getMovies(1, searchQuery, selectedGenre); // Use getMovies with filters
+      const response = await getMovies(page, searchQuery, selectedGenre); // Include page parameter
       if (response.success) {
         setMovies(response.data.movies);
         // Extract unique genres for the filter dropdown
@@ -37,7 +38,15 @@ function UserViewAllMovieList() {
 
   // Handle search and filter
   const handleSearch = () => {
-    fetchMovies();
+    if (!searchQuery && !selectedGenre) {
+      // If both searchQuery and selectedGenre are empty, fetch the default page
+      setPage(1);
+      fetchMovies();
+    } else {
+      // Otherwise, fetch movies with the current filters
+      setPage(1); // Reset to the first page when applying new filters
+      fetchMovies();
+    }
   };
 
   // Handle adding a movie to the watchlist
@@ -51,10 +60,19 @@ function UserViewAllMovieList() {
     }
   };
 
-  // Fetch movies on component mount
+  // Handle pagination
+  const handleNextPage = () => {
+    setPage((prevPage) => prevPage + 1); // Increment page
+  };
+
+  const handlePreviousPage = () => {
+    setPage((prevPage) => Math.max(prevPage - 1, 1)); // Decrement page, but don't go below 1
+  };
+
+  // Fetch movies on component mount or when page, searchQuery, or selectedGenre changes
   useEffect(() => {
     fetchMovies();
-  }, []);
+  }, [page, searchQuery, selectedGenre]);
 
   return (
     <div>
@@ -119,8 +137,9 @@ function UserViewAllMovieList() {
                   style={{ width: "100%" }}
                   variant="top"
                   src={movie.poster_url || Star} // Use fallback image if poster_url is missing
+                  className="p-2"
                 />
-                <Card.Body>
+                <Card.Body className="p-2 text-center">
                   <Card.Title>{movie.title}</Card.Title>
                   <div className="row">
                     <div className="col-7">
@@ -140,8 +159,8 @@ function UserViewAllMovieList() {
                   </div>
                   {/* Button to add to watchlist */}
                   <Button
-                    variant="success"
-                    className="addwatchlistbtn"
+                    variant="danger"
+                    className="d-flex align-items-center justify-content-center mx-auto mt-2"
                     onClick={() => handleAddToWatchlist(movie.id)}
                   >
                     Add to Watchlist
@@ -150,6 +169,24 @@ function UserViewAllMovieList() {
               </Card>
             </div>
           ))}
+        </div>
+        {/* Pagination Controls */}
+        <div className="d-flex justify-content-center m-4 align-items-center">
+          <Button
+            variant="danger"
+            className="m-2"
+            onClick={handlePreviousPage}
+            disabled={page === 1} // Disable "Previous" button on the first page
+          >
+            Previous
+          </Button>
+          <Button
+            variant="danger"
+            onClick={handleNextPage}
+            disabled={movies.length === 0} // Disable "Next" button if no movies are returned
+          >
+            Next
+          </Button>
         </div>
       </div>
     </div>
