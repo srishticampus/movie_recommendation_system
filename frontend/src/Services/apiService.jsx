@@ -28,7 +28,6 @@ const handleResponse = async (apiCall) => {
   }
 };
 
-// User Authentication
 export const userSignup = async (data) => {
   return handleResponse(
     apiClient.post("/api/register/", data, { authRequired: false })
@@ -36,14 +35,20 @@ export const userSignup = async (data) => {
 };
 
 export const login = async (data) => {
+  // console.log("🔵 Attempting login...");
   const response = await handleResponse(apiClient.post("/api/login/", data));
   if (response.success == true) {
-    toast.success("Login successful");
+    // console.log("✅ Login successful. Storing tokens...");
+    console.log(response);
+    toast.success(" Login successful");
     localStorage.setItem("accessToken", response.data.data.access);
     localStorage.setItem("refreshToken", response.data.data.refresh);
+    // localStorage.setItem("userId",)
+    console.log("accessToken", response.data.access);
     window.dispatchEvent(new Event("loginStatusChanged"));
   } else {
-    toast.error("Login Failed");
+    console.log(response);
+    toast.error(" Login Failed");
   }
   return response;
 };
@@ -56,7 +61,6 @@ export const logout = () => {
   window.dispatchEvent(new Event("loginStatusChanged"));
 };
 
-// Movies
 export const getMovies = async (page = 1, query = "", genre = "") => {
   return handleResponse(
     apiClient.get("/api/movies/movies", {
@@ -77,12 +81,51 @@ export const addToWatchList = async (movieId) => {
   return handleResponse(
     apiClient.post(
       `/api/movies/add-to-watchlist/`,
-      { movie_id: movieId },
+      {
+        movie_id: movieId,
+      },
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       }
+    )
+  );
+};
+
+const generateConfig = (isFormData = false, authRequired = true) => ({
+  headers: {
+    "Content-Type": isFormData ? "multipart/form-data" : "application/json",
+  },
+  authRequired,
+});
+
+export const movieList = async () => {
+  return handleResponse(apiClient.get("/api/movies/movies/", generateConfig()));
+};
+
+export const getWatchedMovies = async () => {
+  return handleResponse(apiClient.get("/api/movies/watched/", generateConfig()));
+};
+
+export const getMoviesByGenre = async (genre) => {
+  return handleResponse(
+    apiClient.get(`/api/movies/movies/?genre=${genre}`, generateConfig())
+  );
+};
+
+export const getMovieById = async (movieId) => {
+  return handleResponse(
+    apiClient.get(`/api/movies/movies/${movieId}/`, generateConfig())
+  );
+};
+
+export const addToWatchlist = async (movieId) => {
+  return handleResponse(
+    apiClient.post(
+      "/api/movies/add-to-watchlist/",
+      { movie_id: movieId },
+      generateConfig()
     )
   );
 };
