@@ -41,7 +41,7 @@ class Movie(models.Model):
 
     def fetch_external_rating(self):
         """Fetch movie rating from the TMDb API."""
-        timeout = 5
+        timeout = 15
         tmdb_api_key = settings.TMDB_API_KEY  # Ensure you have this key in settings.py
         url = f"https://api.themoviedb.org/3/movie/{self.tmdb_id}?api_key={tmdb_api_key}"
         

@@ -22,7 +22,7 @@ class MovieListView(APIView):
     """
     API to fetch movies from TMDb with genre names, filtering, search, and pagination.
     """
-    TIMEOUT = 5
+    TIMEOUT = 15
     permission_classes = [permissions.AllowAny]
 
     def get_tmdb_genres(self):
@@ -105,7 +105,7 @@ class MovieDetailView(APIView):
     """
     API to fetch detailed information about a single movie from TMDb.
     """
-    TIMEOUT = 5
+    TIMEOUT = 15
     permission_classes = [permissions.AllowAny]
 
     def get_movie_details(self, movie_id):
@@ -159,7 +159,7 @@ class AddMovieToWatchlistView(APIView):
         url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={settings.TMDB_API_KEY}&language=en-US"
 
         try:
-            response = requests.get(url, timeout=5)
+            response = requests.get(url, timeout=15)
             response.raise_for_status()
             return response.json()
         except requests.RequestException as e:
@@ -389,7 +389,7 @@ class MovieRecommendationView(APIView):
         """Fetch genre list from TMDb"""
         url = f"https://api.themoviedb.org/3/genre/movie/list?api_key={settings.TMDB_API_KEY}&language=en-US"
         try:
-            response = requests.get(url, timeout=5)
+            response = requests.get(url, timeout=15)
             response.raise_for_status()
             genres = response.json().get("genres", [])
             return {genre["id"]: genre["name"] for genre in genres}  # Map genre ID to name
@@ -448,3 +448,16 @@ class MovieRecommendationView(APIView):
             "total_pages": paginator.page.paginator.num_pages,
             "current_page": paginator.page.number,
         })
+
+class TotalMoviesCountView(APIView):
+    """
+    API to get the total count of movies in the database.
+    """
+    permission_classes = [permissions.IsAuthenticated]  # Allow anyone to access this endpoint
+
+    def get(self, request):
+        """
+        Handle GET request to return the total count of movies.
+        """
+        total_movies = Movie.objects.count()
+        return Response({"total_movies": total_movies}, status=status.HTTP_200_OK)
