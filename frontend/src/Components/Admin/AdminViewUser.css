@@ -1,35 +1,96 @@
-#adminViewUsedContent{
+#adminViewUsedContent {
     position: relative;
     top: 100px;
-}
-
-#AdminViewUserTableFull{
+  }
+  
+  #AdminViewUserTableFull {
     margin-top: 20px;
     margin-left: 10px;
     margin-right: 10px;
-    border-radius: 50%;
-}
-#AdminViewUserTable{
-    border: solid rgb(192, 183, 183) 1px;
-}
-.searchbar1{
+    overflow-x: auto; /* Add horizontal scroll for small screens */
+    border-radius: 10px; /* Adjusted border-radius */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+  }
+  
+  #AdminViewUserTable {
+    width: 100%;
+    border-collapse: collapse; /* Ensure borders are collapsed */
+    background-color: white; /* Set a white background for the table */
+  }
+  
+  .searchbar1 {
     margin-right: 35px;
     margin-left: 200px;
-    
-}
-.AdminViewUserTableHeader{
+  }
+  
+  .AdminViewUserTableHeader {
     padding: 10px;
     background-color: rgb(175, 21, 21);
     color: white;
-    font-weight: 200;
-    justify-content: left;
-    border-right: solid rgb(192, 183, 183)  1px;
-}
-.AdminViewUserTableData{
+    font-weight: 500; /* Increased font weight for better readability */
+    text-align: left; /* Ensure text is aligned to the left */
+    border-right: solid rgb(192, 183, 183) 1px;
+  }
+  
+  .AdminViewUserTableData {
     padding: 10px;
-    justify-content: center;
+    text-align: left; /* Ensure text is aligned to the left */
     font-weight: 500;
     font-size: medium;
-    border-right: solid rgb(192, 183, 183)  1px;
-    border-bottom: solid rgb(192, 183, 183)  1px ;
-}
+    border-right: solid rgb(192, 183, 183) 1px;
+    border-bottom: solid rgb(192, 183, 183) 1px;
+  }
+  
+  /* Add hover effect for table rows */
+  #AdminViewUserTable tbody tr:hover {
+    background-color: #f5f5f5; /* Light gray background on hover */
+    cursor: pointer; /* Change cursor to pointer on hover */
+  }
+  
+  /* Style for buttons in the Action column */
+  .AdminViewUserTableData button {
+    padding: 5px 15px;
+    border: none;
+    border-radius: 50px; /* Rounded buttons */
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+  }
+  
+  /* Style for the Activate button */
+  .AdminViewUserTableData button.btn-success {
+    background-color: #28a745; /* Green background */
+    color: white;
+  }
+  
+  .AdminViewUserTableData button.btn-success:hover {
+    background-color: #218838; /* Darker green on hover */
+  }
+  
+  /* Style for the Deactivate button */
+  .AdminViewUserTableData button.btn-danger {
+    background-color: #dc3545; /* Red background */
+    color: white;
+  }
+  
+  .AdminViewUserTableData button.btn-danger:hover {
+    background-color: #c82333; /* Darker red on hover */
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .searchbar1 {
+      margin-left: 0; /* Remove left margin on smaller screens */
+      margin-right: 0; /* Remove right margin on smaller screens */
+    }
+  
+    #AdminViewUserTableFull {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  
+    .AdminViewUserTableHeader,
+    .AdminViewUserTableData {
+      font-size: small; /* Reduce font size for smaller screens */
+    }
+  }
