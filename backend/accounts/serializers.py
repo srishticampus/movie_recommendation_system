@@ -19,6 +19,9 @@ class UserSerializer(serializers.ModelSerializer):
     Serializer for the User model.
     """
     class Meta:
+        """
+        Define the fields to include in the serializer.
+        """
         model = User
         fields = ['id', 'email', 'full_name', 'password', 'user_type', 'is_active', 'is_staff']
         extra_kwargs = {

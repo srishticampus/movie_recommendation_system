@@ -8,11 +8,13 @@ related features, using Django REST Framework and Simple JWT for token handling.
 # Create your views here.
 from django.db.models.functions import ExtractWeek
 from django.db.models import Count
-from rest_framework import generics, viewsets, permissions
+from rest_framework import generics, viewsets, permissions,filters
 from rest_framework.response import Response
 from rest_framework.decorators import action,api_view
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import User,Profile
 from .serializers import UserSerializer, LoginSerializer,ProfileSerializer
 
@@ -181,3 +183,34 @@ def users_by_week(request, year, month):
         return Response(response_data, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class UserAdminViewSet(viewsets.ModelViewSet):
+    """
+    API viewset for admin to manage users (get all users, activate/deactivate users).
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]  # Only admins can access this viewset
+    pagination_class = PageNumberPagination
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    search_fields = ['email', 'full_name']
+
+    @action(detail=True, methods=['post'])
+    def activate_user(self, request, pk=None):
+        """
+        Activate a user by setting is_active to True.
+        """
+        user = self.get_object()
+        user.is_active = True
+        user.save()
+        return Response({"message": "User activated successfully."}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'])
+    def deactivate_user(self, request, pk=None):
+        """
+        Deactivate a user by setting is_active to False.
+        """
+        user = self.get_object()
+        user.is_active = False
+        user.save()
+        return Response({"message": "User deactivated successfully."}, status=status.HTTP_200_OK)
