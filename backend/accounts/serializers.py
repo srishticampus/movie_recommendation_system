@@ -17,22 +17,42 @@ from .models import User,Profile
 class UserSerializer(serializers.ModelSerializer):
     """
     Serializer for the User model.
+    Includes profile_pic and phone_number from the related Profile model.
     """
+    profile_pic = serializers.SerializerMethodField()  # Add profile_pic field
+    phone_number = serializers.SerializerMethodField()  # Add phone_number field
+
     class Meta:
         """
         Define the fields to include in the serializer.
         """
         model = User
-        fields = ['id', 'email', 'full_name', 'password', 'user_type', 'is_active', 'is_staff']
+        fields = ['id', 'email', 'full_name', 'password', 'user_type', 'is_active', 'is_staff', 'profile_pic', 'phone_number']
         extra_kwargs = {
             'password': {'write_only': True},
         }
+
+    def get_profile_pic(self, obj):
+        """
+        Get the profile picture URL from the related Profile model.
+        """
+        if hasattr(obj, 'profile'):
+            return obj.profile.profile_pic.url if obj.profile.profile_pic else None
+        return None
+
+    def get_phone_number(self, obj):
+        """
+        Get the phone number from the related Profile model.
+        """
+        if hasattr(obj, 'profile'):
+            return obj.profile.phone_number
+        return None
 
     def create(self, validated_data):
         """
         Create and return a new user instance, given the validated data.
         """
-        validated_data.setdefault('is_active', True) 
+        validated_data.setdefault('is_active', True)
         password = validated_data.pop('password', None)
         user = User.objects.create_user(**validated_data)
         if password:

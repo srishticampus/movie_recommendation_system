@@ -187,13 +187,19 @@ def users_by_week(request, year, month):
 class UserAdminViewSet(viewsets.ModelViewSet):
     """
     API viewset for admin to manage users (get all users, activate/deactivate users).
+    Excludes users with is_staff = True (admin users).
     """
-    queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]  # Only admins can access this viewset
     pagination_class = PageNumberPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     search_fields = ['email', 'full_name']
+
+    def get_queryset(self):
+        """
+        Override the default queryset to exclude users with is_staff = True.
+        """
+        return User.objects.filter(is_staff=False)
 
     @action(detail=True, methods=['post'])
     def activate_user(self, request, pk=None):
