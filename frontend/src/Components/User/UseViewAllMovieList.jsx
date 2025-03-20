@@ -20,37 +20,39 @@ function UseViewAllMovieList() {
 
   const fetchMovies = async () => {
     const response = await movieList();
-    if (response.success) {
-      setMovies(response.data.movies);
-    } else {
-      setError("Failed to load movies.");
-    }
+    console.log(response,"hh");
+    
+    // if (response.success) {
+    //   setMovies(response.data.movies);
+    // } else {
+    //   setError("Failed to load movies.");
+    // }
   };
 
   // Handle filtering
-  const handleFilter = async () => {
-    let filteredMovies = [];
+  // const handleFilter = async () => {
+  //   let filteredMovies = [];
 
-    if (selectedGenre) {
-      const response = await getMoviesByGenre(selectedGenre);
-      console.log(response,"kk");
+  //   if (selectedGenre) {
+  //     const response = await getMoviesByGenre(selectedGenre);
+  //     console.log(response,"kk");
       
-      if (response.success) {
-        filteredMovies = response.data.movies;
-      }
-    } else {
-      const response = await movieList();
-      if (response.success) {
-        filteredMovies = response.data.movies;
-      }
-    }
+  //     if (response.success) {
+  //       filteredMovies = response.data.movies;
+  //     }
+  //   } else {
+  //     const response = await movieList();
+  //     if (response.success) {
+  //       filteredMovies = response.data.movies;
+  //     }
+  //   }
 
-    if (selectedLanguage) {
-      filteredMovies = filteredMovies.filter((movie) => movie.language === selectedLanguage);
-    }
+  //   if (selectedLanguage) {
+  //     filteredMovies = filteredMovies.filter((movie) => movie.language === selectedLanguage);
+  //   }
 
-    setMovies(filteredMovies);
-  };
+  //   setMovies(filteredMovies);
+  // };
 
   return (
     <div>
@@ -62,7 +64,7 @@ function UseViewAllMovieList() {
           </div>
         </div>
 
-        {/* Filter Section */}
+        {/* Filter Section 
         <center className="mt-2">
           <span className="headingtwo">Filter</span>
           <select
@@ -106,7 +108,7 @@ function UseViewAllMovieList() {
           </Button>
         </center>
 
-        {/* Movies List */}
+         Movies List 
         <div className="row mt-4">
           { <p className="text-center">Loading movies...</p>}
           {error && <p className="text-center text-danger">{error}</p>}
@@ -130,7 +132,7 @@ function UseViewAllMovieList() {
               </Card>
             </div>
           ))}
-        </div>
+        </div>*/}
       </div>
     </div>
   );
