@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import FooterLandingPage from "../LandingPages/FooterLandingPage";
 import Usernavbar from "./Usernavbar";
-import { movieList } from "../../Services/apiService";
+import { getMovies } from "../../Services/apiService";
 import {IMG_BASE_URL} from "../../Services/Baseurl"
 function Carousel({ groupedCards = [] }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -94,7 +94,7 @@ function UserHome() {
   useEffect(() => {
     const fetchData2 = async () => {
       try {
-        const result = await movieList();
+        const result = await getMovies();
         console.log(result);
         
         if (result.success==true) {

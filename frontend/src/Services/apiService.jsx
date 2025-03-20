@@ -1,3 +1,4 @@
+//Services/apiService.jsx
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -86,6 +87,16 @@ export const addToWatchList = async (movieId) => {
   );
 };
 
+export const getWatchlist = async () => {
+  return handleResponse(
+    apiClient.get("/api/movies/watchlist/", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
+  );
+};
+
 export const getTotalMoviesCount = async () => {
   return handleResponse(apiClient.get("/api/total-movies/"));
 };
@@ -107,15 +118,11 @@ export const addRating = async (movieId, rating, review) => {
 
 export const updateRating = async (ratingId, data) => {
   return handleResponse(
-    apiClient.put(
-      `/api/movies/ratings/${ratingId}/`,
-      data,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      }
-    )
+    apiClient.put(`/api/movies/ratings/${ratingId}/`, data, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
   );
 };
 
@@ -130,7 +137,9 @@ export const getMyRatingForMovie = async (movieId) => {
 };
 
 export const getRatingsForMovie = async (movieId) => {
-  return handleResponse(apiClient.get(`/api/movies/movies/${movieId}/ratings/`));
+  return handleResponse(
+    apiClient.get(`/api/movies/movies/${movieId}/ratings/`)
+  );
 };
 
 // Recommendations
