@@ -45,12 +45,12 @@ function AdminNavbar() {
               <li className="nav-item">
                 <Link className="nav-link text-light" to="/admin-viewusers">Users</Link>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <Link className="nav-link text-light" to="/user_add_complaint">Reset Password</Link>
-              </li>
-              <li className="nav-item">
+              </li> */}
+              {/* <li className="nav-item">
                 <Link className="nav-link text-light" to="/admin-contact">Contact</Link>
-              </li>
+              </li> */}
             </ul>
           </div>
 

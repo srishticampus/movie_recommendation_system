@@ -55,7 +55,7 @@ function App() {
         <Route path="/admin-home" element={<AdminHome />} />
         <Route path="/admin-viewmovies" element={<Adminviewmovies />} />
         <Route path="/admin-contact" element={<AdminContact />} />
-        <Route path="/admin-viewmovieDetails" element={<MovieDetailedPage />} />
+        <Route path="/admin-viewmovieDetails/:movieId" element={<MovieDetailedPage />} />
         <Route path="/user-view-all-movie" element={<UserViewAllMovieList/>}/>
         <Route path="/user-view-watched-movie" element={<UserViewWatchedMovie/>}/>
         <Route path="/user-saved-movies" element={<SavedMoviesList/>}/>

@@ -119,7 +119,7 @@ function UserViewMovieDetails() {
       toast.error("Please provide a rating and review.");
       return;
     }
-  
+
     try {
       let response;
       if (isEditing) {
@@ -137,12 +137,12 @@ function UserViewMovieDetails() {
           review: review,
         });
       }
-  
+
       if (response.success) {
         toast.success("Rating submitted successfully!");
         setMyRating(response.data); // Update user's rating
         setShowRatingModal(false);
-  
+
         // Refresh ratings list
         const ratingsResponse = await getRatingsForMovie(movieId);
         if (ratingsResponse.success) {
@@ -218,7 +218,7 @@ function UserViewMovieDetails() {
                 </button>
                 &nbsp;
                 <button className="customermovieviewdetailsdemontemovietype">
-                  Tamil, Telugu
+                  {movie.language}
                 </button>
                 <div id="customermovieviewdetailsdemontemoviegenre">
                   {movie.genres.join(", ")}
@@ -246,19 +246,104 @@ function UserViewMovieDetails() {
         </div>
       </div>
 
-      {/* Ratings Section */}
-      <div className="ratings-section m-5">
-        <h3>Ratings</h3>
-        {ratings.length > 0 ? (
-          ratings.map((rating) => (
-            <div key={rating.id} className="rating-item">
-              <p><strong>{rating.user}</strong>: {rating.review}</p>
-              <p>Rating: {rating.rating}/10</p>
-            </div>
-          ))
-        ) : (
-          <p>No ratings available for this movie.</p>
-        )}
+      {/* Movie Description Section */}
+      <div className="customermoviedescsect">
+        <div className="customermoviedescsectheading">Movie Description</div>
+        <br />
+        <div className="customermoviedescsectcontent">
+          {movie.plot || "No description available."}
+        </div>
+        <br />
+        <br />
+
+        {/* Ratings & Reviews Section */}
+        <div>
+          <Row>
+            <Col className="customermoviedescsectratingdisplaycol" sm={10}>
+              <div className="customermoviedescsectheading">
+                Ratings & Reviews
+              </div>
+              <br />
+              <div className="customermoviedescsectratingcardsect">
+                <CardGroup className="customermoviedescsectratingcardgroup m-2">
+                  {ratings.length > 0 ? (
+                    ratings.map((rating) => (
+                      <Row key={rating.id} className="customermoviedescsectratingcardgrouprow m-2">
+                        <Card className="customermoviedescsectratingsinglecard">
+                          <div className="customermovieratingcardheader">
+                            <img
+                              src={rating.user.profile_image || a}
+                              alt="ratinguser"
+                              style={{ width: "25px", height: "25px" }}
+                            />
+                            &nbsp;{rating.user}
+                          </div>
+                          <div className="customermovieratingcardbody">
+                            <div className="customermoviedescsectratingcardtext">
+                              {rating.review}
+                            </div>
+                            <br />
+                          </div>
+                          <div className="customermoviedescsectratingcardfooter">
+                            {new Date(rating.created_at).toLocaleDateString()}
+                          </div>
+                        </Card>
+                      </Row>
+                    ))
+                  ) : (
+                    <p>No ratings available for this movie.</p>
+                  )}
+                </CardGroup>
+              </div>
+            </Col>
+
+            <Col className="customermoviedescsectaverageratingdisplaycol">
+              <center>
+                <div className="customermoviedescsectratingbtntitle">
+                  Ratings
+                </div>
+                <div id="customermoviedescsectcurrentrating">
+                  {movie.rating}
+                  <span id="customermoviedescsectratingtotal">/10</span>
+                </div>
+                <div className="customermoviedescsectratingcount">
+                  {ratings.length} Rating(s) and {ratings.length} Review(s)
+                </div>
+              </center>
+            </Col>
+          </Row>
+        </div>
+
+        {/* Recommended Movies Section */}
+        <div>
+          <div className="customermoviedescsectheading">You May Also Like</div>
+          <div className="customermoviedescsectrecommendcardsect">
+            {movie.recommendations && movie.recommendations.length > 0 ? (
+              movie.recommendations.map((recommendation, index) => (
+                <Card key={index} className="customermoviedescsectrecommendsinglecard">
+                  <Card.Img
+                    src={recommendation.poster_url || a}
+                    className="customermoviedescrecommendmovieimg"
+                  />
+                  <Card.Body>
+                    <Card.Title className="customermovierecommendcardtitle">
+                      {recommendation.title}
+                    </Card.Title>
+                    <Card.Text className="customermovierecommendcardtext">
+                      {recommendation.genres.join(", ")}
+                      <br />
+                      {recommendation.runtime} min
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+              ))
+            ) : (
+              <p>No recommendations available.</p>
+            )}
+          </div>
+          <br />
+          <br />
+        </div>
       </div>
 
       {/* User Rating Section */}
