@@ -70,7 +70,7 @@ export const getMovies = async (page = 1, query = "", genre = "") => {
 };
 
 export const getMovieDetails = async (movieId) => {
-  return handleResponse(apiClient.get(`/api/movies/${movieId}/`));
+  return handleResponse(apiClient.get(`/api/movies/movies/${movieId}/`));
 };
 
 export const addToWatchList = async (movieId) => {
@@ -131,11 +131,19 @@ export const addRating = async (movieId, rating, review) => {
 
 export const updateRating = async (ratingId, data) => {
   return handleResponse(
-    apiClient.put(`/api/movies/ratings/${ratingId}/`, data, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+    apiClient.put(
+      `/api/movies/ratings/${ratingId}/`,
+      {
+        ...data, // Include the existing data
+        movie: data.movie, // Ensure the movie ID is included
       },
-    })
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          "Content-Type": "application/json",
+        },
+      }
+    )
   );
 };
 
@@ -193,6 +201,7 @@ export const updateUserProfile = async (data) => {
     apiClient.put("/api/profiles/update_me/", data, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        "Content-Type": "multipart/form-data", // Set content type to multipart/form-data
       },
     })
   );

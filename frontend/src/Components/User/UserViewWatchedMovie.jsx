@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { getWatchlist } from "../../Services/apiService";
-import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
-import Form from "react-bootstrap/Form";
+import { Button, Card, Form } from "react-bootstrap";
 import UserNavbar from "./Usernavbar";
 import Star from "../../assets/Star.png";
+import { getWatchlist } from "../../Services/apiService";
+import { Link } from "react-router-dom"; // Import Link
 
 function UserViewWatchedMovie() {
   const [movies, setMovies] = useState([]);
@@ -109,26 +108,41 @@ function UserViewWatchedMovie() {
             movies.map((movie) => (
               <div key={movie.id} className="col-md-4 mb-4">
                 <Card className="separatemoviecard">
-                  <Card.Img
-                    variant="top"
-                    src={movie.poster_url || Star} // Use poster_url from the API or fallback image
-                    alt={movie.title}
-                  />
-                  <Card.Body>
-                    <Card.Title>{movie.title}</Card.Title>
-                    <div className="row">
-                      <div className="col-7">
-                        {movie.genres ? movie.genres.join(", ") : "Unknown Genre"}
+                  {/* Wrap card content in a Link */}
+                  <Link
+                    to={`/user-view-movie-details/${movie.id}`} // Pass movieId as a URL parameter
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    <Card.Img
+                      variant="top"
+                      src={movie.poster_url || Star} // Use poster_url from the API or fallback image
+                      alt={movie.title}
+                    />
+                    <Card.Body>
+                      <Card.Title>{movie.title}</Card.Title>
+                      <div className="row">
+                        <div className="col-7">
+                          {movie.genres ? movie.genres.join(", ") : "Unknown Genre"}
+                        </div>
+                        <div className="col-5">
+                          <img src={Star} alt="Star" style={{ width: "20px", height: "20px" }} />
+                          <small>{movie.rating || "N/A"}/10</small>
+                        </div>
                       </div>
-                      <div className="col-5">
-                        <img src={Star} alt="Star" style={{ width: "20px", height: "20px" }} />
-                        <small>{movie.rating || "N/A"}/10</small>
+                      <div className="mt-2 text-secondary">
+                        <small>{movie.release_date || "Unknown Release Date"}</small>
                       </div>
-                    </div>
-                    <div className="mt-2 text-secondary">
-                      <small>{movie.release_date || "Unknown Release Date"}</small>
-                    </div>
-                  </Card.Body>
+                    </Card.Body>
+                  </Link>
+                  {/* Button to add to watchlist
+                  <div className="text-center my-2">
+                    <Button
+                      variant="danger"
+                      onClick={(e) => handleAddToWatchlist(movie.id, e)} // Pass event to stop propagation
+                    >
+                      Add to Watchlist
+                    </Button>
+                  </div> */}
                 </Card>
               </div>
             ))
