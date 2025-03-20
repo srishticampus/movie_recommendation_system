@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 // Create Axios instance
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL, // Set the base URL from environment variables
-  timeout: 15000, // Set a timeout for requests
+  timeout: 25000, // Set a timeout for requests
   headers: {
     "Content-Type": "application/json", // Default headers
   },
@@ -87,11 +87,15 @@ export const addToWatchList = async (movieId) => {
   );
 };
 
-export const getWatchlist = async () => {
+export const getWatchlist = async (page = 1, genre = "") => {
   return handleResponse(
     apiClient.get("/api/movies/watchlist/", {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+      params: {
+        page,
+        genre: genre || null,
       },
     })
   );
@@ -152,14 +156,25 @@ export const getRatingsForMovie = async (movieId) => {
 };
 
 // Recommendations
-export const getRecommendations = async () => {
-  return handleResponse(
-    apiClient.get("/api/movies/recommendations/", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    })
-  );
+export const getRecommendations = async (page = 1, searchQuery = "", selectedGenre = "") => {
+  // Construct the URL with query parameters
+  let url = `/api/movies/recommendations/?page=${page}`;
+  if (searchQuery) {
+    url += `&search=${searchQuery}`;
+  }
+  if (selectedGenre) {
+    url += `&genre=${selectedGenre}`;
+  }
+
+  // Make the API call
+  const response = await apiClient.get(url, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+    },
+  });
+
+  // Handle the response
+  return handleResponse(response);
 };
 
 // Profiles
