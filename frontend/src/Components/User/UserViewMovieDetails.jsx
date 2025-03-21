@@ -83,23 +83,23 @@ function UserViewMovieDetails() {
   }, [movieId]);
 
   // Handle adding movie to watchlist
-  const handleAddToWatchlist = async () => {
-    setIsWatchlistLoading(true);
+  const handleAddToWatchlist = async (movieId, event) => {
+    event.stopPropagation(); // Prevent the click event from bubbling up to the card
     try {
+      console.log("Adding movie to watchlist with ID:", movieId);
       const response = await addToWatchList(movieId);
       if (response.success) {
-        toast.success("Movie added to watchlist!");
-        setIsInWatchlist(true); // Update watchlist status
+        alert("Movie added to watchlist!");
       } else {
-        toast.error("Failed to add movie to watchlist.");
+        console.error("Failed to add movie to watchlist:", response.errors);
+        alert("Failed to add movie to watchlist.");
       }
     } catch (error) {
-      toast.error("An error occurred while adding to watchlist.");
-    } finally {
-      setIsWatchlistLoading(false);
+      console.error("Error adding movie to watchlist:", error);
+      alert("An error occurred while adding to watchlist.");
     }
   };
-
+  
   // Handle rating modal open
   const handleRatingModalOpen = () => {
     setShowRatingModal(true);
@@ -119,11 +119,16 @@ function UserViewMovieDetails() {
       toast.error("Please provide a rating and review.");
       return;
     }
-
+  
     try {
       let response;
       if (isEditing) {
         // Update existing rating
+        console.log("Updating rating with payload:", {
+          movie: movieId,
+          rating: Number(rating),
+          review: review,
+        });
         response = await updateRating(myRating.id, {
           movie: movieId, // Include the movie ID
           rating: Number(rating), // Ensure rating is a number
@@ -131,18 +136,23 @@ function UserViewMovieDetails() {
         });
       } else {
         // Add new rating
+        console.log("Adding rating with payload:", {
+          movie: movieId,
+          rating: Number(rating),
+          review: review,
+        });
         response = await addRating(movieId, {
           movie: movieId, // Include the movie ID
           rating: Number(rating),
           review: review,
         });
       }
-
+  
       if (response.success) {
         toast.success("Rating submitted successfully!");
         setMyRating(response.data); // Update user's rating
         setShowRatingModal(false);
-
+  
         // Refresh ratings list
         const ratingsResponse = await getRatingsForMovie(movieId);
         if (ratingsResponse.success) {
@@ -150,13 +160,13 @@ function UserViewMovieDetails() {
         }
       } else {
         toast.error("Failed to submit rating.");
+        console.error("Response error:", response.errors);
       }
     } catch (error) {
       toast.error("An error occurred while submitting the rating.");
       console.error("Error details:", error.response?.data); // Log detailed error
     }
   };
-
   // Render star rating input
   const renderStars = () => {
     const stars = [];

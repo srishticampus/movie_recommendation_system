@@ -77,7 +77,7 @@ export const addToWatchList = async (movieId) => {
   return handleResponse(
     apiClient.post(
       `/api/movies/add-to-watchlist/`,
-      { movie_id: movieId },
+      { movie_id: movieId }, // Ensure the payload is correct
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -115,38 +115,27 @@ export const getAllMovies = async () => {
   return handleResponse(apiClient.get("/api/movies/all-movies/"));
 };
 // Ratings
-export const addRating = async (movieId, rating, review) => {
+export const addRating = async (movieId, data) => {
   return handleResponse(
-    apiClient.post(
-      "/api/movies/ratings/",
-      { movie: movieId, rating, review },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      }
-    )
+    apiClient.post("/api/movies/ratings/", data, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        "Content-Type": "application/json",
+      },
+    })
   );
 };
 
 export const updateRating = async (ratingId, data) => {
   return handleResponse(
-    apiClient.put(
-      `/api/movies/ratings/${ratingId}/`,
-      {
-        ...data, // Include the existing data
-        movie: data.movie, // Ensure the movie ID is included
+    apiClient.put(`/api/movies/ratings/${ratingId}/`, data, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        "Content-Type": "application/json",
       },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          "Content-Type": "application/json",
-        },
-      }
-    )
+    })
   );
 };
-
 export const getMyRatingForMovie = async (movieId) => {
   return handleResponse(
     apiClient.get(`/api/movies/movies/${movieId}/my-rating/`, {
