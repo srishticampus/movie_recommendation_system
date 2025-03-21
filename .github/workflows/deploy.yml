@@ -30,17 +30,39 @@ jobs:
             cp -r frontend .backup/frontend
             cp docker-compose.yml .backup/docker-compose.yml
 
+            # Ensure the backend/media directory exists
+            mkdir -p backend/media
+
             # Move files and folders to preserve to a temporary directory
             mkdir -p .temp
-            mv backend/db.sqlite3 .temp/db.sqlite3
-            mv backend/media .temp/media
+            if [ -f "backend/db.sqlite3" ]; then
+              mv backend/db.sqlite3 .temp/db.sqlite3
+            else
+              echo "Warning: backend/db.sqlite3 does not exist. Skipping move."
+            fi
+            if [ -d "backend/media" ]; then
+              mv backend/media .temp/media
+            else
+              echo "Warning: backend/media does not exist. Skipping move."
+            fi
 
             # Delete all files and subdirectories except the .temp directory
             find . -mindepth 1 -maxdepth 1 ! -name '.temp' -exec rm -rf {} +
 
+            # Ensure the backend directory exists
+            mkdir -p backend
+
             # Move preserved files and folders back to their original locations
-            mv .temp/db.sqlite3 backend/db.sqlite3
-            mv .temp/media backend/media
+            if [ -f ".temp/db.sqlite3" ]; then
+              mv .temp/db.sqlite3 backend/db.sqlite3
+            else
+              echo "Warning: .temp/db.sqlite3 does not exist. Skipping move."
+            fi
+            if [ -d ".temp/media" ]; then
+              mv .temp/media backend/media
+            else
+              echo "Warning: .temp/media does not exist. Skipping move."
+            fi
 
             # Clean up the temporary directory
             rm -rf .temp
