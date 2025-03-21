@@ -46,6 +46,9 @@ jobs:
               echo "Warning: backend/media does not exist. Skipping move."
             fi
 
+            # Change ownership of frontend files to the current user
+            sudo chown -R $USER:$USER ./frontend
+
             # Delete all files and subdirectories except the .temp directory
             find . -mindepth 1 -maxdepth 1 ! -name '.temp' -exec rm -rf {} +
 

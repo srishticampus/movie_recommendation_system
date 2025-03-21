@@ -1,77 +1,174 @@
-import AdminNavbar from "./AdminNavbar";
+import { useEffect, useState } from "react";
+import { getMovies } from "../../Services/apiService"; // Import your API service
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
-import Star from "../../assets/Star.png";
-import Form from 'react-bootstrap/Form';
+import Star from "../../assets/default-movie-1.jpg"; // Fallback image
+import AdminNavbar from "./AdminNavbar";
+import Form from "react-bootstrap/Form";
+import "../Admin/AdminviewMovie.css"; // Ensure you have the CSS file
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
 
 function Adminviewmovies() {
+  const [movies, setMovies] = useState([]);
+  const [genres, setGenres] = useState([]);
+  const [selectedGenre, setSelectedGenre] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(1); // Track the current page
+
+  // Fetch movies based on filters
+  const fetchMovies = async () => {
+    try {
+      const response = await getMovies(page, searchQuery, selectedGenre); // Include page parameter
+      if (response.success) {
+        setMovies(response.data.movies);
+        // Extract unique genres for the filter dropdown
+        const genreList = new Set();
+        response.data.movies.forEach((movie) => {
+          movie.genres.forEach((genre) => genreList.add(genre));
+        });
+        setGenres([...genreList]);
+      } else {
+        setError("Failed to fetch movies.");
+      }
+    } catch (error) {
+      console.error("Error fetching movies:", error);
+      setError("Failed to fetch movies.");
+    }
+  };
+
+  // Handle search and filter
+  const handleSearch = () => {
+    if (!searchQuery && !selectedGenre) {
+      // If both searchQuery and selectedGenre are empty, fetch the default page
+      setPage(1);
+      fetchMovies();
+    } else {
+      // Otherwise, fetch movies with the current filters
+      setPage(1); // Reset to the first page when applying new filters
+      fetchMovies();
+    }
+  };
+
+  // Handle pagination
+  const handleNextPage = () => {
+    setPage((prevPage) => prevPage + 1); // Increment page
+  };
+
+  const handlePreviousPage = () => {
+    setPage((prevPage) => Math.max(prevPage - 1, 1)); // Decrement page, but don't go below 1
+  };
+
+  // Fetch movies on component mount or when page, searchQuery, or selectedGenre changes
+  useEffect(() => {
+    fetchMovies();
+  }, [page, searchQuery, selectedGenre]);
+
   return (
     <div>
       <AdminNavbar />
       <div className="container mt-5 pt-5">
-      <div className='row mt-5'>
-      <div className='col'>
-          <h4>All Movies</h4>
-      </div>
-      <div className='col '>
-          <Form className="searchbar1">
+        <div className="row mt-5">
+          <div className="col">
+            <h4>All Movies</h4>
+          </div>
+          <div className="col">
+            <Form className="searchbar1">
               <Form.Control
-                  type="search"
-                  placeholder="Search Here... "
-                  aria-label="Search"
-
-              /> </Form>
-      </div>
-  </div>
+                type="search"
+                placeholder="Search Here..."
+                aria-label="Search"
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </Form>
+          </div>
+        </div>
         <center>
           <span className="headingtwo">Filter</span>
-          <select name="finestatus" className="moviedropdowntab">
-            <option>Genre</option>
-            <option>.</option>
-            <option>.</option>
+          <select
+            name="genre"
+            className="moviedropdowntab"
+            onChange={(e) => setSelectedGenre(e.target.value)}
+            value={selectedGenre}
+          >
+            <option value="">Genre</option>
+            {genres.map((genre) => (
+              <option key={genre} value={genre}>
+                {genre}
+              </option>
+            ))}
           </select>
-          <select name="finestatus" className="moviedropdowntab">
-            <option>Year</option>
-            <option>.</option>
-            <option>.</option>
-          </select>
-          <select name="finestatus" className="moviedropdowntab">
-            <option>Language</option>
-            <option>.</option>
-            <option>.</option>
-          </select>
-          <select name="finestatus" className="moviedropdowntab">
-            <option>Rating</option>
-            <option>.</option>
-            <option>.</option>
-          </select>
-          <Button variant="danger" className="moviesearchtab">
+          <Button
+            variant="danger"
+            className="moviesearchtab"
+            onClick={handleSearch}
+          >
             Search
           </Button>
         </center>
-        <div>
-          <Card className="separatemoviecard">
-            <Card.Img variant="top" src={Star} />
-            <Card.Body>
-              <Card.Title>Demonte 2</Card.Title>
-              <div className="row">
-                <div className="col-7">Horror, Comedy </div>
-                <div className="col-5">
-                  {" "}
-                  <img
-                    src={Star}
-                    alt="Star"
-                    style={{ width: "20px", height: "20px" }}
+        <div className="row">
+          {movies.length === 0 && !error && (
+            <p className="text-center">Loading movies...</p>
+          )}
+          {error && <p className="text-center text-danger">{error}</p>}
+          {movies.length === 0 && !error && (
+            <p className="text-center">No movies found.</p>
+          )}
+          {movies.map((movie) => (
+            <div key={movie.id} className="col-md-4 mb-4">
+              {/* Wrap the Card with Link for navigation */}
+              <Link
+                to={`/admin-viewmovieDetails/${movie.id}`} // Navigate to the detailed view
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <Card className="separatemoviecard">
+                  <Card.Img
+                    style={{ width: "100%" }}
+                    variant="top"
+                    src={movie.poster_url || Star} // Use fallback image if poster_url is missing
+                    className="p-2"
                   />
-                  <small>7.7/10</small>
-                </div>
-              </div>
-
-              <div className="mt-2 text-secondary">
-                <small>2hr 26min</small>
-              </div>
-            </Card.Body>
-          </Card>
+                  <Card.Body className="p-2 text-center">
+                    <Card.Title>{movie.title}</Card.Title>
+                    <div className="row">
+                      <div className="col-7">
+                        Genres: {movie.genres.join(", ")}
+                      </div>
+                      <div className="col-5">
+                        <img
+                          src={Star}
+                          alt="Star"
+                          style={{ width: "20px", height: "20px" }}
+                        />
+                        <small>{movie.rating}/10</small>
+                      </div>
+                    </div>
+                    <div className="mt-2">
+                      Language: <strong>{movie.language}</strong>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Link>
+            </div>
+          ))}
+        </div>
+        {/* Pagination Controls */}
+        <div className="d-flex justify-content-center m-4 align-items-center">
+          <Button
+            variant="danger"
+            className="m-2"
+            onClick={handlePreviousPage}
+            disabled={page === 1} // Disable "Previous" button on the first page
+          >
+            Previous
+          </Button>
+          <Button
+            variant="danger"
+            onClick={handleNextPage}
+            disabled={movies.length === 0} // Disable "Next" button if no movies are returned
+          >
+            Next
+          </Button>
         </div>
       </div>
     </div>
