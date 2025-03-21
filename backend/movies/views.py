@@ -228,7 +228,7 @@ class AddMovieToWatchlistView(APIView):
 
 class WatchlistView(APIView):
     """
-    API to fetch the movies in the current user's watchlist with pagination and genre filtering.
+    API to fetch the movies in the current user's watchlist with pagination, genre filtering, and search.
     """
     permission_classes = [permissions.IsAuthenticated]
 
@@ -266,7 +266,7 @@ class WatchlistView(APIView):
 
     def get(self, request):
         """
-        Handle GET request to fetch the user's watchlist with pagination and genre filtering.
+        Handle GET request to fetch the user's watchlist with pagination, genre filtering, and search.
         """
         user = request.user
         cache_key = f"user_{user.id}_watchlist_movies"
@@ -279,12 +279,20 @@ class WatchlistView(APIView):
         # Genre filter
         selected_genre = request.query_params.get("genre", "")
 
+        # Search query
+        search_query = request.query_params.get("query", "")
+
         if cached_movies:
-            # Apply genre filtering to cached movies
+            # Apply genre filtering and search to cached movies
             if selected_genre:
                 cached_movies = [
                     movie for movie in cached_movies
                     if selected_genre.lower() in [g.lower() for g in movie.get("genres", [])]
+                ]
+            if search_query:
+                cached_movies = [
+                    movie for movie in cached_movies
+                    if search_query.lower() in movie.get("title", "").lower()
                 ]
             # Paginate the cached movies
             paginated_movies = paginator.paginate_queryset(cached_movies, request)
@@ -326,6 +334,10 @@ class WatchlistView(APIView):
             # Apply genre filtering
             if selected_genre and selected_genre.lower() not in [g.lower() for g in genres]:
                 continue  # Skip this movie if it doesn't match the selected genre
+
+            # Apply search filtering
+            if search_query and search_query.lower() not in movie_data.get("title", "").lower():
+                continue  # Skip this movie if it doesn't match the search query
 
             # Format the movie data
             enriched_movies.append({

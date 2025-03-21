@@ -87,7 +87,7 @@ export const addToWatchList = async (movieId) => {
   );
 };
 
-export const getWatchlist = async (page = 1, genre = "") => {
+export const getWatchlist = async (page = 1, genre = "", query = "") => {
   return handleResponse(
     apiClient.get("/api/movies/watchlist/", {
       headers: {
@@ -96,6 +96,7 @@ export const getWatchlist = async (page = 1, genre = "") => {
       params: {
         page,
         genre: genre || null,
+        query: query || null, // Add the query parameter
       },
     })
   );

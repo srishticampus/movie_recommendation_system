@@ -10,18 +10,19 @@ function UserViewWatchedMovie() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // State for filters and pagination
+  // State for filters, pagination, and search
   const [selectedGenre, setSelectedGenre] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // Fetch movies based on filters and pagination
+  // Fetch movies based on filters, pagination, and search
   const fetchWatchedMovies = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await getWatchlist(currentPage, selectedGenre);
+      const response = await getWatchlist(currentPage, selectedGenre, searchQuery);
       if (response.success) {
         // Ensure the response contains the `results` object with `movies` array
         if (response.data && response.data.results && Array.isArray(response.data.results.movies)) {
@@ -40,15 +41,21 @@ function UserViewWatchedMovie() {
     }
   };
 
-  // Fetch movies when filters or page change
+  // Fetch movies when filters, page, or search query changes
   useEffect(() => {
     fetchWatchedMovies();
-  }, [currentPage, selectedGenre]);
+  }, [currentPage, selectedGenre, searchQuery]);
 
   // Handle filter changes
   const handleGenreChange = (e) => {
     setSelectedGenre(e.target.value);
     setCurrentPage(1); // Reset to the first page when changing genre
+  };
+
+  // Handle search query changes
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1); // Reset to the first page when changing search query
   };
 
   // Handle pagination
@@ -74,7 +81,13 @@ function UserViewWatchedMovie() {
           </div>
           <div className="col">
             <Form className="searchbar1">
-              <Form.Control type="search" placeholder="Search Here..." aria-label="Search" />
+              <Form.Control
+                type="search"
+                placeholder="Search Here..."
+                aria-label="Search"
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
             </Form>
           </div>
         </div>
@@ -134,15 +147,6 @@ function UserViewWatchedMovie() {
                       </div>
                     </Card.Body>
                   </Link>
-                  {/* Button to add to watchlist
-                  <div className="text-center my-2">
-                    <Button
-                      variant="danger"
-                      onClick={(e) => handleAddToWatchlist(movie.id, e)} // Pass event to stop propagation
-                    >
-                      Add to Watchlist
-                    </Button>
-                  </div> */}
                 </Card>
               </div>
             ))
