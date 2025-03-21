@@ -33,7 +33,7 @@ class MovieListView(APIView):
                 response = requests.get(url, timeout=self.TIMEOUT)
                 response.raise_for_status()
                 genres = response.json().get("genres", [])
-                cache.set(cache_key, genres, timeout=43200)  # Cache for 10 minutes
+                cache.set(cache_key, genres, timeout=60)  # Cache for 10 minutes
             except (requests.RequestException, requests.Timeout):
                 genres = []
         return {genre["id"]: genre["name"] for genre in genres}
@@ -58,7 +58,7 @@ class MovieListView(APIView):
                 response = requests.get(url, timeout=self.TIMEOUT)
                 response.raise_for_status()
                 movies = response.json()
-                cache.set(cache_key, movies, timeout=43200)  # Cache for 10 minutes
+                cache.set(cache_key, movies, timeout=60)  # Cache for 10 minutes
             except requests.RequestException as e:
                 movies = {"results": [], "total_pages": 1, "error": str(e)}
         return movies
@@ -127,7 +127,7 @@ class MovieDetailView(APIView):
                 response = requests.get(url, timeout=self.TIMEOUT)
                 response.raise_for_status()
                 movie_data = response.json()
-                cache.set(cache_key, movie_data, timeout=43200)  # Cache for 10 minutes
+                cache.set(cache_key, movie_data, timeout=60)  # Cache for 10 minutes
             except requests.RequestException as e:
                 movie_data = {"error": str(e)}
         return movie_data
@@ -179,7 +179,7 @@ class AddMovieToWatchlistView(APIView):
                 response = requests.get(url, timeout=60)
                 response.raise_for_status()
                 movie_data = response.json()
-                cache.set(cache_key, movie_data, timeout=43200)  # Cache for 10 minutes
+                cache.set(cache_key, movie_data, timeout=60)  # Cache for 10 minutes
             except requests.RequestException as e:
                 movie_data = {"error": str(e)}
         return movie_data
@@ -243,7 +243,7 @@ class WatchlistView(APIView):
                 response = requests.get(url, timeout=60)
                 response.raise_for_status()
                 genres = response.json().get("genres", [])
-                cache.set(cache_key, genres, timeout=43200)  # Cache for 10 minutes
+                cache.set(cache_key, genres, timeout=60)  # Cache for 10 minutes
             except (requests.RequestException, requests.Timeout):
                 genres = []
         return {genre["id"]: genre["name"] for genre in genres}
@@ -259,7 +259,7 @@ class WatchlistView(APIView):
                 response = requests.get(url, timeout=60)
                 response.raise_for_status()
                 movie_data = response.json()
-                cache.set(cache_key, movie_data, timeout=43200)  # Cache for 10 minutes
+                cache.set(cache_key, movie_data, timeout=60)  # Cache for 10 minutes
             except requests.RequestException as e:
                 movie_data = {"error": str(e)}
         return movie_data
@@ -342,7 +342,7 @@ class WatchlistView(APIView):
             })
 
         # Cache the enriched movies for 10 minutes
-        cache.set(cache_key, enriched_movies, timeout=43200)
+        cache.set(cache_key, enriched_movies, timeout=60)
 
         # Paginate the enriched movies
         paginated_movies = paginator.paginate_queryset(enriched_movies, request)
@@ -368,7 +368,7 @@ class AllMoviesView(APIView):
                 response = requests.get(url, timeout=60)
                 response.raise_for_status()
                 genres = response.json().get("genres", [])
-                cache.set(cache_key, genres, timeout=43200)  # Cache for 10 minutes
+                cache.set(cache_key, genres, timeout=60)  # Cache for 10 minutes
             except (requests.RequestException, requests.Timeout):
                 genres = []
         return {genre["id"]: genre["name"] for genre in genres}
@@ -414,7 +414,7 @@ class AllMoviesView(APIView):
                 })
 
             # Cache the enriched movies for 10 minutes
-            cache.set(cache_key, enriched_movies, timeout=43200)
+            cache.set(cache_key, enriched_movies, timeout=60)
 
         return Response({
             "movies": enriched_movies,
@@ -432,7 +432,7 @@ class AllMoviesView(APIView):
                 response = requests.get(url, timeout=60)
                 response.raise_for_status()
                 movie_data = response.json()
-                cache.set(cache_key, movie_data, timeout=43200)  # Cache for 10 minutes
+                cache.set(cache_key, movie_data, timeout=60)  # Cache for 10 minutes
             except requests.RequestException as e:
                 movie_data = {"error": str(e)}
         return movie_data
@@ -586,7 +586,7 @@ class MovieRecommendationView(APIView):
                 response = requests.get(url, timeout=15)
                 response.raise_for_status()
                 genres = response.json().get("genres", [])
-                cache.set(cache_key, genres, timeout=43200)  # Cache for 10 minutes
+                cache.set(cache_key, genres, timeout=60)  # Cache for 10 minutes
             except (requests.RequestException, requests.Timeout):
                 genres = []
         return {genre["id"]: genre["name"] for genre in genres}
@@ -608,7 +608,7 @@ class MovieRecommendationView(APIView):
             recommended_movies = recommendation_service.recommend_movies(watchlist_movies, n=100)
 
             # Cache the recommendations for 10 minutes
-            cache.set(cache_key, recommended_movies, timeout=43200)
+            cache.set(cache_key, recommended_movies, timeout=60)
 
         # Apply genre filtering if a genre is provided
         genre_name = request.GET.get("genre")
