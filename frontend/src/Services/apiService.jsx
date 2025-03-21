@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 // Create Axios instance
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL, // Set the base URL from environment variables
-  timeout: 25000, // Set a timeout for requests
+  timeout: 60000, // Set a timeout for requests
   headers: {
     "Content-Type": "application/json", // Default headers
   },
