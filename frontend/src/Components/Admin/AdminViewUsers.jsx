@@ -7,6 +7,7 @@ import { getAllUsers, activateUser, deactivateUser } from "../../Services/apiSer
 import "./AdminViewUser.css";
 import FooterLandingPage from "../LandingPages/FooterLandingPage";
 import AdminNavbar from "./AdminNavbar";
+import DefaultProfileImage from "../../assets/blank-profile-picture-973460_1280.webp"; // Import the default image
 
 function AdminViewUsers() {
   const [users, setUsers] = useState([]); // State to store users
@@ -18,6 +19,7 @@ function AdminViewUsers() {
     const fetchUsers = async () => {
       try {
         const response = await getAllUsers();
+        console.log(response);
         if (response.success) {
           setUsers(response.data); // Update state with fetched users
         } else {
@@ -119,7 +121,11 @@ function AdminViewUsers() {
                     <td className="AdminViewUserTableData">{index + 1}</td>
                     <td className="AdminViewUserTableData">
                       <img
-                        src={user.profile_picture || "default-profile.png"} // Use a fallback image if no profile picture is available
+                        src={
+                          user.profile_pic
+                            ? `${import.meta.env.VITE_API_URL}${user.profile_pic}`
+                            : DefaultProfileImage // Use the default image if profile_pic is null
+                        }
                         alt="Profile"
                         style={{ width: "50px", height: "50px", borderRadius: "50%" }}
                       />

@@ -85,14 +85,14 @@ function UserViewAllMovieList() {
             <h4>All Movies</h4>
           </div>
           <div className="col">
-            <Form className="searchbar1">
+            {/* <Form className="searchbar1">
               <Form.Control
                 type="search"
                 placeholder="Search Here..."
                 aria-label="Search"
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-            </Form>
+            </Form> */}
           </div>
         </div>
         <center>
