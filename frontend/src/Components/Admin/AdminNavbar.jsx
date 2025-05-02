@@ -48,9 +48,9 @@ function AdminNavbar() {
               {/* <li className="nav-item">
                 <Link className="nav-link text-light" to="/user_add_complaint">Reset Password</Link>
               </li> */}
-              {/* <li className="nav-item">
-                <Link className="nav-link text-light" to="/admin-contact">Contact</Link>
-              </li> */}
+              <li className="nav-item">
+                <Link className="nav-link text-light" to="/admin-contact">Contact Us List</Link>
+              </li>
             </ul>
           </div>
 

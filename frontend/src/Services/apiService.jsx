@@ -256,3 +256,19 @@ export const deactivateUser = async (userId) => {
     )
   );
 };
+// Contact Messages
+export const submitContactMessage = async (data) => {
+  return handleResponse(
+    apiClient.post("/api/contact-messages/", data, { authRequired: false })
+  );
+};
+
+export const getContactMessages = async () => {
+  return handleResponse(
+    apiClient.get("/api/contact-messages/", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
+  );
+};

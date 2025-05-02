@@ -6,7 +6,7 @@ from django.urls import path,include
 from rest_framework import routers
 from rest_framework_simplejwt.views import TokenRefreshView
 from accounts.views import (UserViewSet,RegisterView,LoginView,ProfileViewSet,total_users,users_by_week,
-                            UserAdminViewSet)
+                            UserAdminViewSet,ContactMessageListCreateAPIView)
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -19,5 +19,6 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('total-users/', total_users, name='total-users'),
-    path('users-by-week/<int:year>/<int:month>/', users_by_week, name='users-by-week'),\
+    path('users-by-week/<int:year>/<int:month>/', users_by_week, name='users-by-week'),
+    path('contact-messages/', ContactMessageListCreateAPIView.as_view(), name='contact-messages'),
 ]
