@@ -1,71 +1,115 @@
-import "../LandingPages/Contactus.css"
+import { useState, useEffect } from "react";
+import { getContactMessages } from "../../Services/apiService";
+import { toast } from "react-toastify";
+import "../LandingPages/Contactus.css";
 import Phone from '../../assets/Phone.png';
 import Mail from '../../assets/Mail.png';
 import location from '../../assets/location.png';
 import FooterLandingPage from "../LandingPages/FooterLandingPage";
-import "../LandingPages/Landingpage.css"
+import "../LandingPages/Landingpage.css";
 import AdminNavbar from "./AdminNavbar";
 
-
 function AdminContact() {
+  const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const response = await getContactMessages();
+        if (response.success) {
+          setMessages(response.data);
+        } else {
+          setError("Failed to fetch messages");
+          toast.error("Failed to load contact messages");
+        }
+      } catch (err) {
+        setError("An error occurred while fetching messages");
+        toast.error("An error occurred while loading messages");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMessages();
+  }, []);
+
   return (
     <>
-    <AdminNavbar/>
+      <AdminNavbar/>
       <div className="Contact_Us_Background">
         <div className='Section_one'>
-          <p className='sec_one_headingone'>contact us</p>
-          <p className='sec_one_headingtwo'>We're Here to Help!</p>
-          <p className='sec_one_para'>Whether you have a question, need support, or want to provide feedback, we’re here to ensure you have the best movie experience possible. <br />Reach out to us through any of the options below, and our team will get back to you promptly.</p>
+          <p className='sec_one_headingone'>Contact Messages</p>
+          <p className='sec_one_headingtwo'>User Inquiries and Feedback</p>
+          <p className='sec_one_para'>View all messages submitted by users through the contact form. <br />Respond to inquiries and track user feedback.</p>
         </div>
 
         <div className="Contactus_Section_two">
           <div className='container'>
-            <div className="row">
-
-              <div className="col-sm-6">
-                <div className="card Section-two_left_card">
-                  <div className="card-header">
-                    <h5 className='Section-two_left_card_header'>Get in Touch</h5>
-                  </div>
-                  <div className="card-body">
-                    <form>
-
-                      <div className="card  mb-4">
-                        <input
-                          type="text"
-                          className="form-control Section-two_left_card_inputfield"
-                          id="name"
-                          placeholder="Name"
-                        />
+            {isLoading ? (
+              <div className="text-center py-5">
+                <div className="spinner-border text-danger" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            ) : error ? (
+              <div className="alert alert-danger text-center">
+                {error}
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="alert alert-info text-center">
+                No contact messages found.
+              </div>
+            ) : (
+              <div className="row">
+                <div className="col-12">
+                  <div className="card">
+                    <div className="card-header bg-dark text-white">
+                      <h5 className="mb-0">All Messages</h5>
+                    </div>
+                    <div className="card-body p-0">
+                      <div className="table-responsive">
+                        <table className="table table-hover mb-0">
+                          <thead className="table-light">
+                            <tr>
+                              <th>Name</th>
+                              <th>Email</th>
+                              <th>Message</th>
+                              <th>Date</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {messages.map((message) => (
+                              <tr key={message.id}>
+                                <td>{message.name}</td>
+                                <td>
+                                  <a href={`mailto:${message.email}`}>
+                                    {message.email}
+                                  </a>
+                                </td>
+                                <td className="text-truncate" style={{maxWidth: '200px'}}>
+                                  {message.description}
+                                </td>
+                                <td>
+                                  {new Date(message.created_at).toLocaleDateString()}
+                                  <br />
+                                  <small className="text-muted">
+                                    {new Date(message.created_at).toLocaleTimeString()}
+                                  </small>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
-
-                      <div className="mb-4">
-                        <input
-                          type="email"
-                          className="form-control Section-two_left_card_inputemail"
-                          id="email"
-                          placeholder="E-Mail"
-                        />
-                      </div>
-
-                      <div className="mb-3">
-                        <textarea
-                          className="form-control Section-two_left_card_inputtextarea"
-                          rows="7"
-                          placeholder="Description"
-                        />
-                      </div>
-                    </form>
-                  </div>
-                  <div className="card-footer d-flex justify-content-center">
-
-                    <button className="btn btn-danger submit_button" type="submit">
-                      Submit
-                    </button>
+                    </div>
                   </div>
                 </div>
               </div>
+            )}
 
+            {/* <div className="row mt-4">
               <div className="col-sm-6 ">
                 <div className='row'>
                   <div className='col-sm-12 d-flex justify-content-around'>
@@ -107,27 +151,16 @@ function AdminContact() {
                   </div>
                 </div>
               </div>
-
-
-            </div>
+            </div> */}
           </div>
         </div>
 
-      <div className='Section-three'>
-      <FooterLandingPage />
-      </div>
-
-
-      
-
+        <div className='Section-three'>
+          <FooterLandingPage />
+        </div>
       </div>
     </>
-  )
+  );
 }
 
-
-
-
-
-
-export default AdminContact
+export default AdminContact;

@@ -12,7 +12,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
-from .models import User,Profile
+from .models import User,Profile,ContactMessage
 
 class UserSerializer(serializers.ModelSerializer):
     """
@@ -175,3 +175,15 @@ class LoginSerializer(serializers.Serializer):
             "full_name": user.full_name,
             "user_type": user.user_type,
         }
+
+class ContactMessageSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the ContactMessage model.
+    """
+    class Meta:
+        """
+        Define the fields to include in the serializer.
+        """
+        model = ContactMessage
+        fields = ['id', 'name', 'email', 'description', 'created_at']
+        read_only_fields = ['id', 'created_at']

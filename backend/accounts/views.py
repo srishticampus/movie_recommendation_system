@@ -15,8 +15,8 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import User,Profile
-from .serializers import UserSerializer, LoginSerializer,ProfileSerializer
+from .models import User,Profile,ContactMessage
+from .serializers import UserSerializer, LoginSerializer,ProfileSerializer,ContactMessageSerializer
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -220,3 +220,17 @@ class UserAdminViewSet(viewsets.ModelViewSet):
         user.is_active = False
         user.save()
         return Response({"message": "User deactivated successfully."}, status=status.HTTP_200_OK)
+
+class ContactMessageListCreateAPIView(generics.ListCreateAPIView):
+    """
+    API endpoint that allows contact messages to be viewed or created.
+    """
+    queryset = ContactMessage.objects.all().order_by('-created_at')
+    serializer_class = ContactMessageSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def perform_create(self, serializer):
+        """
+        Save the new contact message instance.
+        """
+        serializer.save()
