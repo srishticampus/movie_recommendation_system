@@ -14,7 +14,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework import status
 from django.core.cache import cache
 from .models import Rating, Movie, MovieWatchList
-from .serializers import RatingSerializer, MovieSerializer
+from .serializers import RatingSerializer, MovieSerializer,MovieWatchListSerializer
 from .recommendation_service import RecommendationService
 
 
@@ -362,6 +362,50 @@ class WatchlistView(APIView):
             "movies": paginated_movies,
             "total_movies": len(enriched_movies),
         })
+class RemoveFromWatchlistView(APIView):
+    """
+    API to remove a movie from the user's watchlist.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, movie_id):
+        """
+        Handle DELETE request to remove a movie from the user's watchlist.
+        """
+        try:
+            movie = Movie.objects.get(tmdb_id=movie_id)
+            watchlist_entry = MovieWatchList.objects.filter(
+                user=request.user,
+                movie=movie
+            ).first()
+            
+            if not watchlist_entry:
+                return Response(
+                    {"error": "This movie is not in your watchlist."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            
+            watchlist_entry.delete()
+            
+            # Clear watchlist cache
+            cache_key = f"user_{request.user.id}_watchlist_movies"
+            cache.delete(cache_key)
+            
+            return Response(
+                {"message": "Movie removed from your watchlist successfully."},
+                status=status.HTTP_200_OK
+            )
+            
+        except Movie.DoesNotExist:
+            return Response(
+                {"error": "Movie not found in the database."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class AllMoviesView(APIView):
     """

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Button, Card, Form } from "react-bootstrap";
+import { Button, Card, Form, Modal } from "react-bootstrap";
 import UserNavbar from "./Usernavbar";
 import Star from "../../assets/Star.png";
-import { getWatchlist } from "../../Services/apiService";
-import { Link } from "react-router-dom"; // Import Link
+import { getWatchlist, removeFromWatchList } from "../../Services/apiService";
+import { Link } from "react-router-dom";
 
 function UserViewWatchedMovie() {
   const [movies, setMovies] = useState([]);
@@ -16,6 +16,10 @@ function UserViewWatchedMovie() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  // State for removal confirmation modal
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [movieToRemove, setMovieToRemove] = useState(null);
+
   // Fetch movies based on filters, pagination, and search
   const fetchWatchedMovies = async () => {
     setLoading(true);
@@ -24,10 +28,9 @@ function UserViewWatchedMovie() {
     try {
       const response = await getWatchlist(currentPage, selectedGenre, searchQuery);
       if (response.success) {
-        // Ensure the response contains the `results` object with `movies` array
         if (response.data && response.data.results && Array.isArray(response.data.results.movies)) {
-          setMovies(response.data.results.movies); // Set the movies from the API response
-          setTotalPages(response.data.results.total_pages || 1); // Set the total number of pages
+          setMovies(response.data.results.movies);
+          setTotalPages(response.data.results.total_pages || 1);
         } else {
           setError("Invalid response format: movies array not found.");
         }
@@ -37,25 +40,51 @@ function UserViewWatchedMovie() {
     } catch (error) {
       setError("An error occurred while fetching watched movies.");
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
-  // Fetch movies when filters, page, or search query changes
   useEffect(() => {
     fetchWatchedMovies();
   }, [currentPage, selectedGenre, searchQuery]);
 
+  // Handle removal confirmation
+  const handleRemoveClick = (movie) => {
+    setMovieToRemove(movie);
+    setShowRemoveModal(true);
+  };
+
+  // Handle actual removal
+  const confirmRemove = async () => {
+    if (!movieToRemove) return;
+    
+    try {
+      const response = await removeFromWatchList(movieToRemove.id);
+      if (response.success) {
+        toast.success("Movie removed from watchlist!");
+        // Refresh the list
+        fetchWatchedMovies();
+      } else {
+        toast.error("Failed to remove movie from watchlist.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while removing movie.");
+    } finally {
+      setShowRemoveModal(false);
+      setMovieToRemove(null);
+    }
+  };
+
   // Handle filter changes
   const handleGenreChange = (e) => {
     setSelectedGenre(e.target.value);
-    setCurrentPage(1); // Reset to the first page when changing genre
+    setCurrentPage(1);
   };
 
   // Handle search query changes
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
-    setCurrentPage(1); // Reset to the first page when changing search query
+    setCurrentPage(1);
   };
 
   // Handle pagination
@@ -119,16 +148,29 @@ function UserViewWatchedMovie() {
         <div className="row mt-4">
           {movies && movies.length > 0 ? (
             movies.map((movie) => (
-              <div key={movie.id} className="col-md-4 mb-4">
+              <div key={movie.id} className="col-md-4 mb-4 position-relative">
+                {/* Remove button (X in corner) */}
+                <button
+                  className="position-absolute top-0 end-0 m-2 bg-danger text-white rounded-circle border-0"
+                  style={{ width: "30px", height: "30px", zIndex: 1 }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleRemoveClick(movie);
+                  }}
+                  aria-label="Remove from watchlist"
+                >
+                  ×
+                </button>
+                
                 <Card className="separatemoviecard">
-                  {/* Wrap card content in a Link */}
                   <Link
-                    to={`/user-view-movie-details/${movie.id}`} // Pass movieId as a URL parameter
+                    to={`/user-view-movie-details/${movie.id}`}
                     style={{ textDecoration: "none", color: "inherit" }}
                   >
                     <Card.Img
                       variant="top"
-                      src={movie.poster_url || Star} // Use poster_url from the API or fallback image
+                      src={movie.poster_url || Star}
                       alt={movie.title}
                     />
                     <Card.Body>
@@ -177,6 +219,24 @@ function UserViewWatchedMovie() {
           </Button>
         </div>
       </div>
+
+      {/* Removal Confirmation Modal */}
+      <Modal show={showRemoveModal} onHide={() => setShowRemoveModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Removal</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to remove "{movieToRemove?.title}" from your watchlist?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowRemoveModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={confirmRemove}>
+            Remove
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

@@ -282,3 +282,12 @@ export const getContactMessages = async () => {
     })
   );
 };
+export const removeFromWatchList = async (movieId) => {
+  return handleResponse(
+    apiClient.delete(`/api/movies/remove-from-watchlist/${movieId}/`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
+  );
+};
