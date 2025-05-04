@@ -4,10 +4,10 @@ import { toast } from "react-toastify";
 
 // Create Axios instance
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, // Set the base URL from environment variables
-  timeout: 60000, // Set a timeout for requests
+  baseURL: import.meta.env.VITE_API_URL,
+  timeout: 60000,
   headers: {
-    "Content-Type": "application/json", // Default headers
+    "Content-Type": "application/json",
   },
 });
 
@@ -17,7 +17,7 @@ const handleResponse = async (apiCall) => {
     return {
       success: true,
       data: response.data,
-      fullResponse: response, // Include the complete response object
+      fullResponse: response,
     };
   } catch (error) {
     return {
@@ -77,7 +77,7 @@ export const addToWatchList = async (movieId) => {
   return handleResponse(
     apiClient.post(
       `/api/movies/add-to-watchlist/`,
-      { movie_id: movieId }, // Ensure the payload is correct
+      { movie_id: movieId },
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -96,7 +96,7 @@ export const getWatchlist = async (page = 1, genre = "", query = "") => {
       params: {
         page,
         genre: genre || null,
-        query: query || null, // Add the query parameter
+        query: query || null,
       },
     })
   );
@@ -111,10 +111,11 @@ export const getTotalMoviesCount = async () => {
     } 
   ));
 };
-// Fetch all movies with detailed information
+
 export const getAllMovies = async () => {
   return handleResponse(apiClient.get("/api/movies/all-movies/"));
 };
+
 // Ratings
 export const addRating = async (movieId, data) => {
   return handleResponse(
@@ -137,6 +138,17 @@ export const updateRating = async (ratingId, data) => {
     })
   );
 };
+
+export const deleteRating = async (ratingId) => {
+  return handleResponse(
+    apiClient.delete(`/api/movies/ratings/${ratingId}/`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
+  );
+};
+
 export const getMyRatingForMovie = async (movieId) => {
   return handleResponse(
     apiClient.get(`/api/movies/movies/${movieId}/my-rating/`, {
@@ -155,7 +167,6 @@ export const getRatingsForMovie = async (movieId) => {
 
 // Recommendations
 export const getRecommendations = async (page = 1, searchQuery = "", selectedGenre = "") => {
-  // Construct the URL with query parameters
   let url = `/api/movies/recommendations/?page=${page}`;
   if (searchQuery) {
     url += `&search=${searchQuery}`;
@@ -164,14 +175,12 @@ export const getRecommendations = async (page = 1, searchQuery = "", selectedGen
     url += `&genre=${selectedGenre}`;
   }
 
-  // Make the API call
   const response = await apiClient.get(url, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
     },
   });
 
-  // Handle the response
   return handleResponse(response);
 };
 
@@ -191,7 +200,7 @@ export const updateUserProfile = async (data) => {
     apiClient.put("/api/profiles/update_me/", data, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        "Content-Type": "multipart/form-data", // Set content type to multipart/form-data
+        "Content-Type": "multipart/form-data",
       },
     })
   );
@@ -256,6 +265,7 @@ export const deactivateUser = async (userId) => {
     )
   );
 };
+
 // Contact Messages
 export const submitContactMessage = async (data) => {
   return handleResponse(

@@ -12,6 +12,7 @@ import {
   getMovieDetails,
   addRating,
   updateRating,
+  deleteRating,
   getMyRatingForMovie,
   getRatingsForMovie,
   addToWatchList,
@@ -20,57 +21,57 @@ import {
 import { useParams } from "react-router-dom";
 
 function UserViewMovieDetails() {
-  const [movie, setMovie] = useState(null); // Initialize as null
-  const [ratings, setRatings] = useState([]); // All ratings for the movie
-  const [myRating, setMyRating] = useState(null); // User's rating for the movie
+  const [movie, setMovie] = useState(null);
+  const [ratings, setRatings] = useState([]);
+  const [myRating, setMyRating] = useState(null);
   const [showRatingModal, setShowRatingModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [isInWatchlist, setIsInWatchlist] = useState(false); // Track if movie is in watchlist
-  const [isWatchlistLoading, setIsWatchlistLoading] = useState(false); // Loading state for watchlist
+  const [isInWatchlist, setIsInWatchlist] = useState(false);
+  const [isWatchlistLoading, setIsWatchlistLoading] = useState(false);
 
-  const { movieId } = useParams(); // Get movieId from URL params
+  const { movieId } = useParams();
 
-  // Fetch movie details, ratings, and watchlist status
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch movie details
         const movieResponse = await getMovieDetails(movieId);
         if (movieResponse.success) {
-          setMovie(movieResponse.data); // Set movie data
+          setMovie(movieResponse.data);
         } else {
           toast.error("Failed to fetch movie details.");
-          setMovie(null); // Set movie to null if not found
+          setMovie(null);
         }
 
         // Fetch ratings for the movie
         const ratingsResponse = await getRatingsForMovie(movieId);
         if (ratingsResponse.success) {
-          setRatings(ratingsResponse.data); // Set all ratings
+          setRatings(ratingsResponse.data);
         } else {
           toast.error("Failed to fetch ratings.");
-          setRatings([]); // Set empty array if ratings not found
+          setRatings([]);
         }
 
         // Fetch user's rating for the movie
         const myRatingResponse = await getMyRatingForMovie(movieId);
         if (myRatingResponse.success) {
-          setMyRating(myRatingResponse.data); // Set user's rating
+          setMyRating(myRatingResponse.data);
           setRating(myRatingResponse.data.rating);
           setReview(myRatingResponse.data.review);
         } else {
-          setMyRating(null); // Set user rating to null if not found
+          setMyRating(null);
         }
 
-        // Fetch user's watchlist and check if the movie is in it
+        // Fetch user's watchlist
         const watchlistResponse = await getWatchlist();
         if (watchlistResponse.success) {
           const isMovieInWatchlist = watchlistResponse.data.results.movies.some(
             (movie) => movie.id === parseInt(movieId)
           );
-          setIsInWatchlist(isMovieInWatchlist); // Update watchlist status
+          setIsInWatchlist(isMovieInWatchlist);
         } else {
           toast.error("Failed to fetch watchlist.");
         }
@@ -82,92 +83,98 @@ function UserViewMovieDetails() {
     fetchData();
   }, [movieId]);
 
-  // Handle adding movie to watchlist
   const handleAddToWatchlist = async (movieId, event) => {
-    event.stopPropagation(); // Prevent the click event from bubbling up to the card
+    event.stopPropagation();
     try {
-      console.log("Adding movie to watchlist with ID:", movieId);
+      setIsWatchlistLoading(true);
       const response = await addToWatchList(movieId);
       if (response.success) {
-        alert("Movie added to watchlist!");
+        toast.success("Movie added to watchlist!");
+        setIsInWatchlist(true);
       } else {
-        console.error("Failed to add movie to watchlist:", response.errors);
-        alert("Failed to add movie to watchlist.");
+        toast.error("Failed to add movie to watchlist.");
       }
     } catch (error) {
-      console.error("Error adding movie to watchlist:", error);
-      alert("An error occurred while adding to watchlist.");
+      toast.error("An error occurred while adding to watchlist.");
+    } finally {
+      setIsWatchlistLoading(false);
     }
   };
-  
-  // Handle rating modal open
+
   const handleRatingModalOpen = () => {
     setShowRatingModal(true);
   };
 
-  // Handle rating modal close
   const handleRatingModalClose = () => {
     setShowRatingModal(false);
     setIsEditing(false);
-    setRating(0);
-    setReview("");
+    setRating(myRating?.rating || 0);
+    setReview(myRating?.review || "");
   };
 
-  // Handle rating submission
   const handleRatingSubmit = async () => {
     if (!rating || !review) {
       toast.error("Please provide a rating and review.");
       return;
     }
-  
+
     try {
       let response;
+      const ratingData = {
+        movie: movieId,
+        rating: Number(rating),
+        review: review,
+      };
+
       if (isEditing) {
-        // Update existing rating
-        console.log("Updating rating with payload:", {
-          movie: movieId,
-          rating: Number(rating),
-          review: review,
-        });
-        response = await updateRating(myRating.id, {
-          movie: movieId, // Include the movie ID
-          rating: Number(rating), // Ensure rating is a number
-          review: review, // Ensure review is a string
-        });
+        response = await updateRating(myRating.id, ratingData);
       } else {
-        // Add new rating
-        console.log("Adding rating with payload:", {
-          movie: movieId,
-          rating: Number(rating),
-          review: review,
-        });
-        response = await addRating(movieId, {
-          movie: movieId, // Include the movie ID
-          rating: Number(rating),
-          review: review,
-        });
+        response = await addRating(movieId, ratingData);
       }
-  
+
       if (response.success) {
-        toast.success("Rating submitted successfully!");
-        setMyRating(response.data); // Update user's rating
+        toast.success(`Rating ${isEditing ? 'updated' : 'added'} successfully!`);
+        setMyRating(response.data);
         setShowRatingModal(false);
-  
+
         // Refresh ratings list
         const ratingsResponse = await getRatingsForMovie(movieId);
         if (ratingsResponse.success) {
-          setRatings(ratingsResponse.data); // Update all ratings
+          setRatings(ratingsResponse.data);
         }
       } else {
-        toast.error("Failed to submit rating.");
-        console.error("Response error:", response.errors);
+        toast.error(`Failed to ${isEditing ? 'update' : 'add'} rating.`);
       }
     } catch (error) {
       toast.error("An error occurred while submitting the rating.");
-      console.error("Error details:", error.response?.data); // Log detailed error
     }
   };
-  // Render star rating input
+
+  const handleDeleteRating = async () => {
+    setShowDeleteConfirm(false);
+    try {
+      if (!myRating) return;
+      
+      const response = await deleteRating(myRating.id);
+      if (response.success) {
+        toast.success("Rating deleted successfully!");
+        setMyRating(null);
+        setRating(0);
+        setReview("");
+        
+        // Refresh ratings list
+        const ratingsResponse = await getRatingsForMovie(movieId);
+        if (ratingsResponse.success) {
+          setRatings(ratingsResponse.data);
+        }
+      } else {
+        toast.error("Failed to delete rating.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while deleting the rating.");
+    }
+  };
+
   const renderStars = () => {
     const stars = [];
     for (let i = 1; i <= 10; i++) {
@@ -184,7 +191,6 @@ function UserViewMovieDetails() {
     return stars;
   };
 
-  // Fallback UI if movie is not found
   if (!movie) {
     return (
       <div>
@@ -244,7 +250,7 @@ function UserViewMovieDetails() {
                   &nbsp;
                   <button
                     id="customermovieviewdetailsdemontemarkbtn"
-                    onClick={handleAddToWatchlist}
+                    onClick={(e) => handleAddToWatchlist(movieId, e)}
                     disabled={isInWatchlist || isWatchlistLoading}
                   >
                     {isInWatchlist ? "In Watchlist" : "Add to Watchlist"}
@@ -256,7 +262,6 @@ function UserViewMovieDetails() {
         </div>
       </div>
 
-      {/* Movie Description Section */}
       <div className="customermoviedescsect">
         <div className="customermoviedescsectheading">Movie Description</div>
         <br />
@@ -266,7 +271,6 @@ function UserViewMovieDetails() {
         <br />
         <br />
 
-        {/* Ratings & Reviews Section */}
         <div>
           <Row>
             <Col className="customermoviedescsectratingdisplaycol" sm={10}>
@@ -324,7 +328,6 @@ function UserViewMovieDetails() {
           </Row>
         </div>
 
-        {/* Recommended Movies Section */}
         <div>
           <div className="customermoviedescsectheading">You May Also Like</div>
           <div className="customermoviedescsectrecommendcardsect">
@@ -356,15 +359,24 @@ function UserViewMovieDetails() {
         </div>
       </div>
 
-      {/* User Rating Section */}
       <div className="user-rating-section m-5">
         <h3>Your Rating</h3>
         {myRating ? (
           <div>
             <p>Your Rating: {myRating.rating}/10</p>
             <p>Your Review: {myRating.review}</p>
-            <Button variant="danger" onClick={() => { setIsEditing(true); handleRatingModalOpen(); }}>
+            <Button 
+              variant="danger" 
+              onClick={() => { setIsEditing(true); handleRatingModalOpen(); }}
+              className="me-2"
+            >
               Edit Rating
+            </Button>
+            <Button 
+              variant="outline-danger" 
+              onClick={() => setShowDeleteConfirm(true)}
+            >
+              Delete Rating
             </Button>
           </div>
         ) : (
@@ -381,7 +393,6 @@ function UserViewMovieDetails() {
         )}
       </div>
 
-      {/* Rating Modal */}
       <Modal show={showRatingModal} onHide={handleRatingModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>{isEditing ? "Edit Rating" : "Add Rating"}</Modal.Title>
@@ -409,6 +420,23 @@ function UserViewMovieDetails() {
           </Button>
           <Button variant="danger" onClick={handleRatingSubmit}>
             Submit
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showDeleteConfirm} onHide={() => setShowDeleteConfirm(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Deletion</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete your rating?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleDeleteRating}>
+            Delete
           </Button>
         </Modal.Footer>
       </Modal>
