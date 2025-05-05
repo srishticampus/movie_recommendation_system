@@ -3,7 +3,7 @@ name: Deploy Movie Recommendation System
 on:
   push:
     branches:
-      - main  # Trigger deployment when code is pushed to the `main` branch
+      - main
 
 jobs:
   deploy:
@@ -14,8 +14,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: SSH into the server and clean up the target directory (excluding specific files and folders)
-      - name: Clean up server directory (preserve db.sqlite3 and media folder)
+      # Step 2: Prepare server directory with proper permissions
+      - name: Setup server directory permissions
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            sudo mkdir -p /var/www/python.sicsglobal.com/movie_recommendation_system
+            sudo chown -R $USER:$USER /var/www/python.sicsglobal.com/movie_recommendation_system
+            sudo chmod -R 755 /var/www/python.sicsglobal.com/movie_recommendation_system
+
+      # Step 3: Clean up the target directory (preserving db.sqlite3 and media)
+      - name: Clean up server directory
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -23,54 +35,38 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             cd /var/www/python.sicsglobal.com/movie_recommendation_system/
-
-            # Create a backup of the current deployment (excluding environment files)
+            
+            # Create backup directory
             mkdir -p .backup
-            cp -r backend .backup/backend
-            cp -r frontend .backup/frontend
-            cp docker-compose.yml .backup/docker-compose.yml
-
-            # Ensure the backend/media directory exists
-            mkdir -p backend/media
-
-            # Move files and folders to preserve to a temporary directory
+            
+            # Backup current deployment
+            [ -d "backend" ] && cp -r backend .backup/backend || echo "No backend to backup"
+            [ -d "frontend" ] && cp -r frontend .backup/frontend || echo "No frontend to backup"
+            [ -f "docker-compose.yml" ] && cp docker-compose.yml .backup/docker-compose.yml || echo "No docker-compose.yml to backup"
+            
+            # Create temp directory for preserved files
             mkdir -p .temp
-            if [ -f "backend/db.sqlite3" ]; then
-              mv backend/db.sqlite3 .temp/db.sqlite3
-            else
-              echo "Warning: backend/db.sqlite3 does not exist. Skipping move."
-            fi
-            if [ -d "backend/media" ]; then
-              mv backend/media .temp/media
-            else
-              echo "Warning: backend/media does not exist. Skipping move."
-            fi
-
-            # Change ownership of frontend files to the current user
-            sudo chown -R $USER:$USER ./frontend
-
-            # Delete all files and subdirectories except the .temp directory
-            find . -mindepth 1 -maxdepth 1 ! -name '.temp' -exec rm -rf {} +
-
-            # Ensure the backend directory exists
+            
+            # Move files to preserve
+            [ -f "backend/db.sqlite3" ] && mv backend/db.sqlite3 .temp/db.sqlite3 || echo "No db.sqlite3 to preserve"
+            [ -d "backend/media" ] && mv backend/media .temp/media || echo "No media to preserve"
+            
+            # Clean directory (preserve .temp and .backup)
+            find . -mindepth 1 -maxdepth 1 ! -name '.temp' ! -name '.backup' -exec rm -rf {} +
+            
+            # Restore preserved files
             mkdir -p backend
-
-            # Move preserved files and folders back to their original locations
-            if [ -f ".temp/db.sqlite3" ]; then
-              mv .temp/db.sqlite3 backend/db.sqlite3
-            else
-              echo "Warning: .temp/db.sqlite3 does not exist. Skipping move."
-            fi
-            if [ -d ".temp/media" ]; then
-              mv .temp/media backend/media
-            else
-              echo "Warning: .temp/media does not exist. Skipping move."
-            fi
-
-            # Clean up the temporary directory
+            [ -f ".temp/db.sqlite3" ] && mv .temp/db.sqlite3 backend/db.sqlite3 || echo "No db.sqlite3 to restore"
+            [ -d ".temp/media" ] && mv .temp/media backend/media || echo "No media to restore"
+            
+            # Cleanup
             rm -rf .temp
+            
+            # Ensure proper permissions
+            chmod -R 755 .
+            chown -R $USER:$USER .
 
-      # Step 3: Copy files to the server using SCP with password authentication
+      # Step 4: Copy files to the server
       - name: Copy files to server
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -79,12 +75,11 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           source: "./"
           target: "/var/www/python.sicsglobal.com/movie_recommendation_system/"
-          strip_components: 1  # Remove the top-level directory when copying
-          overwrite: true  # Allow overwriting existing files
-          tar_tmp_path: /tmp  # Use a writable temporary directory
-          tar_exec: "tar"  # Use tar without sudo
+          strip_components: 1
+          overwrite: true
+          tar_tmp_path: /tmp
 
-      # Step 4: Create environment files on the server
+      # Step 5: Create environment files
       - name: Create environment files
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -93,18 +88,18 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             cd /var/www/python.sicsglobal.com/movie_recommendation_system/
-
-            # Create backend .env file
+            
+            # Create backend .env
             echo "${{ secrets.BACKEND_ENV }}" > backend/.env
-
-            # Create frontend .env.development file
+            chmod 600 backend/.env
+            
+            # Create frontend environment files
             echo "${{ secrets.FRONTEND_ENV_DEVELOPMENT }}" > frontend/.env.development
-
-            # Create frontend .env.production file
             echo "${{ secrets.FRONTEND_ENV_PRODUCTION }}" > frontend/.env.production
+            chmod 600 frontend/.env.*
 
-      # Step 5: SSH into the server and deploy the application using docker-compose
-      - name: Deploy to server
+      # Step 6: Deploy with docker-compose
+      - name: Deploy application
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -112,14 +107,18 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             cd /var/www/python.sicsglobal.com/movie_recommendation_system/
-
+            
             # Stop and remove existing containers
             docker-compose down
-
+            
             # Build and start new containers
             docker-compose up -d --build
+            
+            # Ensure proper permissions for media files
+            docker-compose exec backend chmod -R 755 /app/media
+            docker-compose exec backend chown -R www-data:www-data /app/media
 
-      # Step 6: Verify deployment
+      # Step 7: Verify deployment
       - name: Verify deployment
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -127,23 +126,22 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            # Check if the backend container is running
+            # Check container status
             if ! docker ps --filter "name=movie_recommendation_system_backend" --format "{{.Status}}" | grep -q "Up"; then
-              echo "Backend container is not running. Rolling back..."
+              echo "::error::Backend container is not running"
               exit 1
             fi
-
-            # Check if the frontend container is running
+            
             if ! docker ps --filter "name=movie_recommendation_system_frontend" --format "{{.Status}}" | grep -q "Up"; then
-              echo "Frontend container is not running. Rolling back..."
+              echo "::error::Frontend container is not running"
               exit 1
             fi
+            
+            echo "Deployment verified successfully"
 
-            echo "Deployment verified successfully."
-
-      # Step 7: Rollback in case of failure
+      # Step 8: Rollback on failure
       - name: Rollback on failure
-        if: failure()  # Run this step only if any previous step fails
+        if: failure()
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -151,16 +149,23 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             cd /var/www/python.sicsglobal.com/movie_recommendation_system/
-
-            # Stop and remove any partially deployed containers
+            
+            echo "::warning::Deployment failed - attempting rollback"
+            
+            # Stop any partially deployed containers
             docker-compose down
-
-            # Restore the backup (excluding environment files)
-            cp -r .backup/backend backend
-            cp -r .backup/frontend frontend
-            cp .backup/docker-compose.yml docker-compose.yml
-
-            # Start the previous working containers
-            docker-compose up -d
-
-            echo "Rollback completed successfully."
+            
+            # Restore from backup
+            if [ -d ".backup" ]; then
+              rm -rf backend frontend docker-compose.yml
+              cp -r .backup/backend backend
+              cp -r .backup/frontend frontend
+              cp .backup/docker-compose.yml docker-compose.yml
+              
+              # Start previous working containers
+              docker-compose up -d
+              echo "Rollback completed successfully"
+            else
+              echo "::error::No backup found to rollback to"
+              exit 1
+            fi
