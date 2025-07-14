@@ -109,14 +109,14 @@ jobs:
             cd /var/www/python.sicsglobal.com/movie_recommendation_system/
             
             # Stop and remove existing containers
-            docker-compose down
+            docker compose down
             
             # Build and start new containers
-            docker-compose up -d --build
+            docker compose up -d --build
             
             # Ensure proper permissions for media files
-            docker-compose exec backend chmod -R 755 /app/media
-            docker-compose exec backend chown -R www-data:www-data /app/media
+            docker compose exec backend chmod -R 755 /app/media
+            docker compose exec backend chown -R www-data:www-data /app/media
 
       # Step 7: Verify deployment
       - name: Verify deployment
@@ -153,7 +153,7 @@ jobs:
             echo "::warning::Deployment failed - attempting rollback"
             
             # Stop any partially deployed containers
-            docker-compose down
+            docker compose down
             
             # Restore from backup
             if [ -d ".backup" ]; then
@@ -163,7 +163,7 @@ jobs:
               cp .backup/docker-compose.yml docker-compose.yml
               
               # Start previous working containers
-              docker-compose up -d
+              docker compose up -d
               echo "Rollback completed successfully"
             else
               echo "::error::No backup found to rollback to"
