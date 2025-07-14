@@ -533,3 +533,5 @@ Example Response
 {
     "message": "Rating deleted successfully"
 }
+
+Updated
